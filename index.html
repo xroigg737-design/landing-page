@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apps XRoig</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 40%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 28px;
+        }
+        header h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ffd700, #ffaa00, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px 48px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Category frame */
+        .category {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .category-banner {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+            filter: brightness(0.7);
+            transition: filter 0.3s;
+        }
+        .category:hover .category-banner {
+            filter: brightness(0.85);
+        }
+        .category-body {
+            padding: 14px 20px 18px;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .category-title {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+        }
+        .cat-music .category-title { color: #ffaa00; }
+        .cat-ai .category-title    { color: #7aafff; }
+        .cat-tool .category-title  { color: #c8a0ff; }
+        .cat-manual .category-title { color: #ff8a65; }
+        .cat-game .category-title  { color: #66cc66; }
+        .cat-sailing .category-title { color: #4fc3f7; }
+
+        .category-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Remove old icon style */
+
+        /* App buttons */
+        .apps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .app-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 10px;
+            border: none;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.88em;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .app-btn:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        .app-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .app-btn .ico {
+            font-size: 1.15em;
+        }
+
+        /* Category-specific button styles */
+        .cat-music .app-btn {
+            background: linear-gradient(180deg, #d4920a 0%, #a06800 100%);
+        }
+        .cat-music .app-btn:hover {
+            background: linear-gradient(180deg, #e8a420 0%, #b87800 100%);
+            box-shadow: 0 4px 18px rgba(255,170,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-ai .app-btn {
+            background: linear-gradient(180deg, #3a6fd8 0%, #2850a8 100%);
+        }
+        .cat-ai .app-btn:hover {
+            background: linear-gradient(180deg, #4a80e8 0%, #3060c0 100%);
+            box-shadow: 0 4px 18px rgba(70,120,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-tool .app-btn {
+            background: linear-gradient(180deg, #8040c8 0%, #5e2a98 100%);
+        }
+        .cat-tool .app-btn:hover {
+            background: linear-gradient(180deg, #9555dd 0%, #7035b0 100%);
+            box-shadow: 0 4px 18px rgba(160,80,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-game .app-btn {
+            background: linear-gradient(180deg, #2d8a2d 0%, #1d6520 100%);
+        }
+        .cat-game .app-btn:hover {
+            background: linear-gradient(180deg, #3aa03a 0%, #287828 100%);
+            box-shadow: 0 4px 18px rgba(80,200,80,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-manual .app-btn {
+            background: linear-gradient(180deg, #bf5630 0%, #8f3a1e 100%);
+        }
+        .cat-manual .app-btn:hover {
+            background: linear-gradient(180deg, #d46840 0%, #a04828 100%);
+            box-shadow: 0 4px 18px rgba(255,138,101,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-sailing .app-btn {
+            background: linear-gradient(180deg, #1a7fb5 0%, #0e5a82 100%);
+        }
+        .cat-sailing .app-btn:hover {
+            background: linear-gradient(180deg, #2090cc 0%, #1470a0 100%);
+            box-shadow: 0 4px 18px rgba(79,195,247,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-sailing .category-banner {
+            height: 180px;
+            object-fit: contain;
+            background: linear-gradient(135deg, #0a3d62 0%, #1a6b8a 50%, #2e86c1 100%);
+        }
+
+        /* Regles de Regates widget */
+        .rules-widget {
+            margin-top: 14px;
+            border: 1px solid rgba(79,195,247,0.2);
+            border-radius: 10px;
+            background: rgba(10,61,98,0.35);
+            overflow: hidden;
+        }
+        .rules-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 11px 16px;
+            background: linear-gradient(180deg, rgba(26,127,181,0.4) 0%, rgba(14,90,130,0.4) 100%);
+            border: none;
+            color: #4fc3f7;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .rules-toggle:hover {
+            background: linear-gradient(180deg, rgba(32,144,204,0.5) 0%, rgba(20,112,160,0.5) 100%);
+        }
+        .rules-toggle .arrow {
+            transition: transform 0.3s;
+            font-size: 0.75em;
+        }
+        .rules-toggle.open .arrow {
+            transform: rotate(90deg);
+        }
+        .rules-content {
+            display: none;
+            padding: 12px 16px 16px;
+        }
+        .rules-content.open {
+            display: block;
+        }
+        .rules-section-title {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(79,195,247,0.6);
+            margin: 12px 0 8px;
+            font-weight: 600;
+        }
+        .rules-section-title:first-child {
+            margin-top: 0;
+        }
+        .rules-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .rules-list a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(26,127,181,0.2);
+            color: #c8e8ff;
+            text-decoration: none;
+            font-size: 0.82em;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid rgba(79,195,247,0.1);
+        }
+        .rules-list a:hover {
+            background: rgba(32,144,204,0.35);
+            border-color: rgba(79,195,247,0.25);
+            transform: translateX(3px);
+        }
+        .rules-list .badge {
+            font-size: 0.65em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .badge-video { background: rgba(255,60,60,0.25); color: #ff7070; }
+        .badge-pdf   { background: rgba(255,170,0,0.25); color: #ffcc44; }
+        .badge-link  { background: rgba(79,195,247,0.25); color: #4fc3f7; }
+
+        .rules-header {
+            display: flex;
+            align-items: center;
+        }
+        .rules-toggle {
+            flex: 1;
+        }
+        .rules-edit-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            color: rgba(79,195,247,0.5);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .rules-edit-btn:hover {
+            color: #4fc3f7;
+        }
+        .rules-edit-btn.active {
+            color: #ffaa00;
+        }
+
+        /* Admin controls */
+        .rules-item-actions {
+            display: none;
+            margin-left: auto;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .editing .rules-item-actions {
+            display: flex;
+        }
+        .rules-item-actions button {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.7em;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-rename {
+            background: rgba(79,195,247,0.25);
+            color: #4fc3f7;
+        }
+        .btn-delete {
+            background: rgba(255,60,60,0.25);
+            color: #ff7070;
+        }
+        .btn-rename:hover { background: rgba(79,195,247,0.4); }
+        .btn-delete:hover { background: rgba(255,60,60,0.4); }
+
+        .rules-add-bar {
+            display: none;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(26,127,181,0.15);
+            border-radius: 8px;
+            border: 1px dashed rgba(79,195,247,0.25);
+        }
+        .editing .rules-add-bar {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .rules-add-bar select,
+        .rules-add-bar input {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(79,195,247,0.3);
+            background: rgba(10,30,50,0.8);
+            color: #e8e8e8;
+            font-size: 0.8em;
+        }
+        .rules-add-bar input { flex: 1; min-width: 120px; }
+        .rules-add-bar button {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            background: linear-gradient(180deg, #1a7fb5 0%, #0e5a82 100%);
+            color: #fff;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .rules-add-bar button:hover {
+            background: linear-gradient(180deg, #2090cc 0%, #1470a0 100%);
+        }
+        .rules-empty {
+            text-align: center;
+            padding: 16px;
+            color: rgba(79,195,247,0.4);
+            font-size: 0.82em;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px 20px;
+            color: #334;
+            font-size: 0.75em;
+            margin-top: auto;
+        }
+
+        @media (max-width: 700px) {
+            header { padding: 28px 16px 20px; }
+            header h1 { font-size: 1.7em; }
+            .content { padding: 0 16px 32px; grid-template-columns: 1fr; }
+            .category-banner { height: 100px; }
+            .category-body { padding: 12px 16px 14px; }
+            .app-btn { padding: 9px 16px; font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Apps XRoig</h1>
+</header>
+
+<div class="content">
+
+    <div class="category cat-music">
+        <img class="category-banner" src="assets/icons/musica.jpg" alt="Musica">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Musica</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="entrenador-partitures/index.html">
+                    <span class="ico">&#9835;</span> Entrenador de Partitures
+                </a>
+                <a class="app-btn" href="entrenador-partitures/acords.html">
+                    <span class="ico">&#9836;</span> Analitzador d'Acords
+                </a>
+                <a class="app-btn" href="piano-chords/index.html" data-local="http://localhost:5070">
+                    <span class="ico">&#127929;</span> Annotador d'Acords PDF
+                </a>
+                <a class="app-btn" href="/repertori/" data-local="http://localhost:5075">
+                    <span class="ico">&#9834;</span> Repertori
+                </a>
+                <a class="app-btn" href="/partitura/" data-local="http://localhost:5050">
+                    <span class="ico">&#9833;</span> Conversor MusicXML
+                </a>
+                <a class="app-btn" href="concert-10e-aniversari/index.html">
+                    <span class="ico">&#127895;</span> Concert 10è Aniversari
+                </a>
+                <a class="app-btn" href="cataleg-concerts/index.html">
+                    <span class="ico">&#128214;</span> Catàleg de Concerts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category cat-ai">
+        <img class="category-banner" src="assets/icons/ia.png" alt="IA">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Intel&#183;lig&#232;ncia Artificial</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="http://localhost:5000" data-local="http://localhost:5000" data-remote-disabled title="No disponible al servidor">
+                    <span class="ico">&#9655;</span> VideoMind
+                </a>
+                <a class="app-btn" href="/text2audio/" data-local="http://localhost:5065">
+                    <span class="ico">&#127911;</span> Text2Audio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category cat-tool">
+        <img class="category-banner" src="assets/icons/eines.png" alt="Eines">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Eines Digitals</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="webdl/index.html">
+                    <span class="ico">&#8615;</span> WebDL
+                </a>
+                <a class="app-btn" href="https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:" target="_blank">
+                    <span class="ico">&#9729;</span> AWS Console
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category cat-sailing">
+        <img class="category-banner" src="assets/icons/sailing.png" alt="Sailing">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Sailing</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="meteo-previ/index.html">
+                    <span class="ico">&#9973;</span> Meteo-Previ
+                </a>
+                <a class="app-btn" href="avui-regu/index.html">
+                    <span class="ico">&#9973;</span> Avui Regu?
+                </a>
+                <a class="app-btn" href="https://dash.cloudflare.com/?to=/:account/web-analytics/xroigg737-design.github.io" target="_blank">
+                    <span class="ico">&#128202;</span> Analytics Avui Regu
+                </a>
+            </div>
+
+            <!-- Regles de Regates -->
+            <div class="rules-widget">
+                <div class="rules-header">
+                    <button class="rules-toggle" onclick="this.classList.toggle('open');document.getElementById('rulesContent').classList.toggle('open')">
+                        <span class="arrow">&#9654;</span> Regles de Regates
+                    </button>
+                    <button class="rules-edit-btn" onclick="rulesAdmin.toggleEdit()" title="Editar">&#9998;</button>
+                </div>
+                <div id="rulesContent" class="rules-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category cat-manual">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Manuals Usuari</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="manuals/kinetico-2050c.html">
+                    <span class="ico">&#128167;</span> Kinetico 2050c
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="category cat-game">
+        <img class="category-banner" src="assets/icons/jocs.jpeg" alt="Jocs">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Jocs</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="chess/index.html">
+                    <span class="ico">&#9822;</span> Escacs 3D
+                </a>
+                <a class="app-btn" href="chess-openings/index.html">
+                    <span class="ico">&#9816;</span> Obertures d'Escacs
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    Apps XRoig &middot; 2026
+</footer>
+
+<script>
+(() => {
+    const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
+    document.querySelectorAll('a[data-local]').forEach(a => {
+        if (isLocal) {
+            a.href = a.dataset.local;
+        }
+    });
+    // En remot, desactivar botons marcats amb data-remote-disabled
+    if (!isLocal) {
+        document.querySelectorAll('[data-remote-disabled]').forEach(el => {
+            el.style.opacity = '0.4';
+            el.style.cursor = 'not-allowed';
+            el.style.pointerEvents = 'none';
+        });
+    }
+})();
+
+// Regles de Regates - CRUD amb localStorage
+const rulesAdmin = (() => {
+    const STORAGE_KEY = 'regles-regates';
+    const ICONS = { video: '\u{1F3AC}', pdf: '\u{1F4C4}', link: '\u{1F517}' };
+    const SECTIONS = { video: 'Videos formatius', pdf: 'Documents PDF', link: 'Recursos i Eines' };
+    let editing = false;
+
+    function load() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+        // Dades inicials
+        return [
+            { type: 'video', name: '10 Regles bàsiques de regata (subtítols en català)', url: 'regles-regates/regles-regates-ca.mp4' },
+            { type: 'pdf', name: 'Racing Rules of Sailing 2025-2028 (World Sailing)', url: 'https://www.sailing.org/inside-world-sailing/rules-regulations/racing-rules-of-sailing/' },
+            { type: 'link', name: 'RacingRulesOfSailing.org - Animacions interactives', url: 'https://www.racingrulesofsailing.org/' },
+            { type: 'link', name: 'World Sailing - Protestes i Apel\u00b7lacions', url: 'https://www.sailing.org/inside-world-sailing/rules-regulations/protest-and-appeals/' }
+        ];
+    }
+
+    function save(items) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function render() {
+        const container = document.getElementById('rulesContent');
+        const items = load();
+        const grouped = { video: [], pdf: [], link: [] };
+        items.forEach((item, i) => { item._idx = i; (grouped[item.type] || grouped.link).push(item); });
+
+        let html = '';
+        for (const [type, label] of Object.entries(SECTIONS)) {
+            if (grouped[type].length === 0) continue;
+            html += `<div class="rules-section-title">${label}</div><ul class="rules-list">`;
+            for (const item of grouped[type]) {
+                const isLocalVideo = item.url.endsWith('.mp4') || item.url.endsWith('.webm');
+                const videoId = 'vid_' + item._idx;
+                html += `<li>
+                    <a href="${item.url}" target="_blank" ${isLocalVideo ? `onclick="event.preventDefault();const v=document.getElementById('${videoId}');v.style.display=v.style.display==='none'?'block':'none'"` : ''}>
+                        <span>${ICONS[type]}</span> ${item.name}
+                        <span class="badge badge-${type}">${type}</span>
+                        <span class="rules-item-actions">
+                            <button class="btn-rename" onclick="event.stopPropagation();event.preventDefault();rulesAdmin.rename(${item._idx})">Renombrar</button>
+                            <button class="btn-delete" onclick="event.stopPropagation();event.preventDefault();rulesAdmin.remove(${item._idx})">Esborrar</button>
+                        </span>
+                    </a>
+                    ${isLocalVideo ? `<video id="${videoId}" style="display:none;width:100%;border-radius:8px;margin-top:6px" controls preload="none"><source src="${item.url}" type="video/mp4"></video>` : ''}
+                </li>`;
+            }
+            html += '</ul>';
+        }
+        if (items.length === 0) {
+            html += '<div class="rules-empty">Cap element encara. Fes clic a &#9998; per afegir-ne.</div>';
+        }
+        html += `<div class="rules-add-bar">
+            <select id="rulesNewType">
+                <option value="video">Video</option>
+                <option value="pdf">PDF</option>
+                <option value="link">Link</option>
+            </select>
+            <input id="rulesNewName" placeholder="Nom" />
+            <input id="rulesNewUrl" placeholder="URL" />
+            <button onclick="rulesAdmin.add()">Afegir</button>
+        </div>`;
+        container.innerHTML = html;
+        if (editing) container.classList.add('editing');
+        else container.classList.remove('editing');
+    }
+
+    function toggleEdit() {
+        editing = !editing;
+        const btn = document.querySelector('.rules-edit-btn');
+        btn.classList.toggle('active', editing);
+        // Obrir el panell si entrem en mode edició
+        if (editing) {
+            document.getElementById('rulesContent').classList.add('open');
+            document.querySelector('.rules-toggle').classList.add('open');
+        }
+        render();
+    }
+
+    function add() {
+        const type = document.getElementById('rulesNewType').value;
+        const name = document.getElementById('rulesNewName').value.trim();
+        const url = document.getElementById('rulesNewUrl').value.trim();
+        if (!name || !url) return alert('Cal omplir nom i URL');
+        const items = load();
+        items.push({ type, name, url });
+        save(items);
+        render();
+    }
+
+    function rename(idx) {
+        const items = load();
+        const newName = prompt('Nou nom:', items[idx].name);
+        if (newName !== null && newName.trim()) {
+            items[idx].name = newName.trim();
+            save(items);
+            render();
+        }
+    }
+
+    function remove(idx) {
+        const items = load();
+        if (confirm(`Esborrar "${items[idx].name}"?`)) {
+            items.splice(idx, 1);
+            save(items);
+            render();
+        }
+    }
+
+    // Renderitzar al carregar
+    render();
+
+    return { toggleEdit, add, rename, remove };
+})();
+</script>
+
+</body>
+</html>
