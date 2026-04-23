@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="ag" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7aafff"/>
+      <stop offset="100%" stop-color="#4060ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+  <!-- Brain shape -->
+  <path d="M32 14c-5 0-9 2-11 5.5C18.5 20 17 22.5 17 26c0 2.5 1 4.7 2.5 6.3-.3 1-.5 2.2-.5 3.7 0 4 2 7 5 8.5 1.5 3.3 4.5 5.5 8 5.5s6.5-2.2 8-5.5c3-1.5 5-4.5 5-8.5 0-1.5-.2-2.7-.5-3.7C46 30.7 47 28.5 47 26c0-3.5-1.5-6-4-6.5C41 16 37 14 32 14z" fill="url(#ag)" opacity="0.9"/>
+  <!-- Center line -->
+  <line x1="32" y1="16" x2="32" y2="48" stroke="#1a1a2e" stroke-width="1.5" opacity="0.4"/>
+  <!-- Neural dots -->
+  <circle cx="27" cy="24" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="37" cy="24" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="25" cy="33" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="39" cy="33" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="29" cy="41" r="2" fill="#fff" opacity="0.7"/>
+  <circle cx="35" cy="41" r="2" fill="#fff" opacity="0.7"/>
+  <!-- Neural connections -->
+  <line x1="27" y1="24" x2="37" y2="24" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+  <line x1="27" y1="24" x2="25" y2="33" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+  <line x1="37" y1="24" x2="39" y2="33" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+  <line x1="25" y1="33" x2="29" y2="41" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+  <line x1="39" y1="33" x2="35" y2="41" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+  <line x1="25" y1="33" x2="39" y2="33" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+</svg>
