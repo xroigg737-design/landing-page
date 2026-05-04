@@ -427,7 +427,7 @@
         .cc-body { padding: 24px; }
         .cc-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 12px;
             margin-bottom: 24px;
         }
@@ -462,56 +462,64 @@
             padding-bottom: 6px;
             border-bottom: 1px solid rgba(255,170,0,0.12);
         }
-        .cc-cat { margin-bottom: 20px; }
-        .cc-cat-name {
-            font-size: 0.75em;
-            font-weight: 600;
-            color: rgba(255,255,255,0.55);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 8px;
+        .cc-backups {
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+        }
+        .cc-backup-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
+            padding: 7px 12px;
+            font-size: 0.82em;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
         }
-        .cc-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            background: rgba(255,255,255,0.025);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px;
-            margin-bottom: 6px;
-            transition: background 0.2s;
-        }
-        .cc-item:hover { background: rgba(255,255,255,0.05); }
-        .cc-item-name {
+        .cc-backup-item:last-child { border-bottom: none; }
+        .cc-backup-date {
+            color: #ffaa00;
             font-weight: 600;
-            font-size: 0.9em;
-            color: #e8e8e8;
-            min-width: 0;
+            white-space: nowrap;
         }
-        .cc-item-sep {
-            color: rgba(255,255,255,0.15);
-            flex-shrink: 0;
-        }
-        .cc-item-piece {
-            color: rgba(255,255,255,0.45);
-            font-size: 0.84em;
-            min-width: 0;
+        .cc-backup-msg {
+            color: rgba(255,255,255,0.4);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .cc-item-instr {
-            margin-left: auto;
-            font-size: 0.75em;
+        .cc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84em;
+        }
+        .cc-table th {
+            text-align: left;
+            padding: 8px 10px;
+            font-size: 0.78em;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             color: rgba(255,170,0,0.7);
-            background: rgba(255,170,0,0.1);
-            padding: 3px 10px;
-            border-radius: 6px;
-            flex-shrink: 0;
+            border-bottom: 2px solid rgba(255,170,0,0.15);
+            white-space: nowrap;
+        }
+        .cc-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #e0e0e0;
+        }
+        .cc-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .cc-table .cc-td-name { font-weight: 600; white-space: nowrap; }
+        .cc-table .cc-td-cat {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.45);
+            white-space: nowrap;
+        }
+        .cc-table .cc-td-piece {
+            color: rgba(255,255,255,0.55);
+        }
+        .cc-table .cc-td-instr {
+            font-size: 0.88em;
+            color: rgba(255,170,0,0.6);
             white-space: nowrap;
         }
         .cc-loading {
@@ -571,8 +579,8 @@
             .cc-stats { gap: 8px; }
             .cc-stat { padding: 14px 10px; }
             .cc-stat-val { font-size: 1.3em; }
-            .cc-item { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
-            .cc-item-instr { margin-left: 0; }
+            .cc-table { font-size: 0.78em; }
+            .cc-table th, .cc-table td { padding: 7px 6px; }
         }
     </style>
 </head>
@@ -724,7 +732,7 @@
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v1.1</p>
+    <p class="footer-version">v1.2</p>
 </footer>
 
 <script>
@@ -923,17 +931,9 @@ async function loadConsultaConcert() {
 
 function renderConsulta(data) {
     const body = document.getElementById('ccBody');
-    const lastMod = data.lastModified ? new Date(data.lastModified) : null;
-    const dateStr = lastMod
-        ? lastMod.toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-        : 'Sense dades';
+    const fmtDate = d => new Date(d).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
     let html = `<div class="cc-stats">
-        <div class="cc-stat">
-            <div class="cc-stat-icon">&#128197;</div>
-            <div class="cc-stat-val">${lastMod ? lastMod.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' }) : '—'}</div>
-            <div class="cc-stat-label">${lastMod ? lastMod.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' }) + ' h' : 'Última actualització'}</div>
-        </div>
         <div class="cc-stat">
             <div class="cc-stat-icon">&#127926;</div>
             <div class="cc-stat-val">${data.totalRegistrations}</div>
@@ -941,34 +941,46 @@ function renderConsulta(data) {
         </div>
     </div>`;
 
+    // Historial backups
+    html += '<div class="cc-section-title">Historial backups</div>';
+    if (data.backups && data.backups.length > 0) {
+        html += '<div class="cc-backups">';
+        data.backups.forEach(b => {
+            html += `<div class="cc-backup-item">
+                <span class="cc-backup-date">${fmtDate(b.date)}</span>
+                <span class="cc-backup-msg">${b.message}</span>
+            </div>`;
+        });
+        html += '</div>';
+    } else {
+        html += '<div style="color:rgba(255,255,255,0.35);font-size:0.85em;padding:10px 0">No hi ha historial de backups disponible</div>';
+    }
+
+    // Llista inscrits
+    html += '<div class="cc-section-title">Llista d\'inscrits</div>';
     if (data.registrations.length === 0) {
         html += `<div class="cc-empty">
             <div class="cc-empty-icon">&#127925;</div>
             <div>Encara no hi ha cap inscripció</div>
         </div>`;
     } else {
-        html += '<div class="cc-section-title">Llista d\'inscrits</div>';
-        const grouped = {};
+        html += `<table class="cc-table">
+            <thead><tr>
+                <th>Alumne</th>
+                <th>Peça</th>
+                <th>Temàtica</th>
+                <th>Instr.</th>
+            </tr></thead><tbody>`;
         data.registrations.forEach(r => {
-            const key = r.category;
-            if (!grouped[key]) grouped[key] = { icon: r.categoryIcon, items: [] };
-            grouped[key].items.push(r);
+            const composerBit = r.composer ? ` — ${r.composer}` : '';
+            html += `<tr>
+                <td class="cc-td-name">${r.studentName}</td>
+                <td class="cc-td-piece">${r.pieceTitle}${composerBit}</td>
+                <td class="cc-td-cat">${r.categoryIcon || ''} ${r.category}</td>
+                <td class="cc-td-instr">${r.instrument || ''}</td>
+            </tr>`;
         });
-        for (const [cat, group] of Object.entries(grouped)) {
-            html += `<div class="cc-cat">
-                <div class="cc-cat-name">${group.icon || ''} ${cat} <span style="opacity:0.4;font-weight:400">(${group.items.length})</span></div>`;
-            group.items.forEach(r => {
-                const instrHtml = r.instrument ? `<span class="cc-item-instr">${r.instrument}</span>` : '';
-                const composerBit = r.composer ? ` — ${r.composer}` : '';
-                html += `<div class="cc-item">
-                    <span class="cc-item-name">${r.studentName}</span>
-                    <span class="cc-item-sep">&#9656;</span>
-                    <span class="cc-item-piece">${r.pieceTitle}${composerBit}</span>
-                    ${instrHtml}
-                </div>`;
-            });
-            html += '</div>';
-        }
+        html += '</tbody></table>';
     }
 
     html += `<button class="cc-refresh" onclick="loadConsultaConcert()">&#8635; Actualitzar</button>`;
