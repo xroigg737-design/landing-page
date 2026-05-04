@@ -364,6 +364,194 @@
             margin-top: auto;
         }
 
+        /* Concert consultation modal */
+        .cc-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+        .cc-overlay.open { display: flex; }
+        .cc-modal {
+            background: linear-gradient(160deg, #1e1e36 0%, #16213e 100%);
+            border: 1px solid rgba(255,170,0,0.2);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 660px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+            animation: ccSlideIn 0.3s ease-out;
+        }
+        @keyframes ccSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: linear-gradient(180deg, rgba(212,146,10,0.12) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(255,170,0,0.1);
+        }
+        .cc-header h2 {
+            font-size: 1.15em;
+            color: #ffaa00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cc-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-size: 1.4em;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .cc-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .cc-body { padding: 24px; }
+        .cc-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .cc-stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+        .cc-stat-icon { font-size: 1.5em; margin-bottom: 6px; }
+        .cc-stat-val {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #ffaa00;
+            line-height: 1.2;
+        }
+        .cc-stat-label {
+            font-size: 0.72em;
+            color: rgba(255,255,255,0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 4px;
+        }
+        .cc-section-title {
+            font-size: 0.78em;
+            font-weight: 700;
+            color: #ffaa00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,170,0,0.12);
+        }
+        .cc-cat { margin-bottom: 20px; }
+        .cc-cat-name {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 6px;
+            transition: background 0.2s;
+        }
+        .cc-item:hover { background: rgba(255,255,255,0.05); }
+        .cc-item-name {
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #e8e8e8;
+            min-width: 0;
+        }
+        .cc-item-sep {
+            color: rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+        .cc-item-piece {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.84em;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .cc-item-instr {
+            margin-left: auto;
+            font-size: 0.75em;
+            color: rgba(255,170,0,0.7);
+            background: rgba(255,170,0,0.1);
+            padding: 3px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .cc-loading {
+            text-align: center;
+            padding: 48px 20px;
+            color: rgba(255,255,255,0.45);
+        }
+        .cc-spinner {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255,170,0,0.15);
+            border-top-color: #ffaa00;
+            border-radius: 50%;
+            animation: ccSpin 0.7s linear infinite;
+            margin-bottom: 14px;
+        }
+        @keyframes ccSpin { to { transform: rotate(360deg); } }
+        .cc-empty {
+            text-align: center;
+            padding: 36px 20px;
+            color: rgba(255,255,255,0.35);
+        }
+        .cc-empty-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .cc-error {
+            text-align: center;
+            padding: 36px 20px;
+            color: #ff7070;
+        }
+        .cc-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,170,0,0.3);
+            background: rgba(255,170,0,0.08);
+            color: #ffaa00;
+            font-size: 0.82em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cc-refresh:hover { background: rgba(255,170,0,0.15); }
+
         @media (max-width: 700px) {
             header { padding: 28px 16px 20px; }
             header h1 { font-size: 1.7em; }
@@ -371,6 +559,14 @@
             .category-banner { height: 100px; }
             .category-body { padding: 12px 16px 14px; }
             .app-btn { padding: 9px 16px; font-size: 0.85em; }
+            .cc-overlay { padding: 16px 10px; }
+            .cc-header { padding: 16px 18px; }
+            .cc-body { padding: 16px; }
+            .cc-stats { gap: 8px; }
+            .cc-stat { padding: 14px 10px; }
+            .cc-stat-val { font-size: 1.3em; }
+            .cc-item { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+            .cc-item-instr { margin-left: 0; }
         }
     </style>
 </head>
@@ -410,6 +606,9 @@
                 </a>
                 <a class="app-btn" href="cataleg-concerts/index.html">
                     <span class="ico">&#128214;</span> Catàleg de Concerts
+                </a>
+                <a class="app-btn" href="#" onclick="event.preventDefault();openConsultaConcert()">
+                    <span class="ico">&#128203;</span> Consulta Concert
                 </a>
             </div>
         </div>
@@ -654,6 +853,120 @@ const rulesAdmin = (() => {
 
     return { toggleEdit, add, rename, remove };
 })();
+</script>
+
+<!-- Consulta Concert Modal -->
+<div class="cc-overlay" id="ccOverlay" onclick="if(event.target===this)closeConsultaConcert()">
+    <div class="cc-modal">
+        <div class="cc-header">
+            <h2>&#127895; Consulta Concert</h2>
+            <button class="cc-close" onclick="closeConsultaConcert()">&times;</button>
+        </div>
+        <div class="cc-body" id="ccBody">
+            <div class="cc-loading">
+                <div class="cc-spinner"></div>
+                <div>Carregant dades del concert...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getApiBase() {
+    const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
+    return isLocal ? 'http://localhost:8080/concert-10e-aniversari/api/index.php'
+                   : 'concert-10e-aniversari/api/index.php';
+}
+
+function openConsultaConcert() {
+    document.getElementById('ccOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    loadConsultaConcert();
+}
+
+function closeConsultaConcert() {
+    document.getElementById('ccOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('ccOverlay').classList.contains('open')) {
+        closeConsultaConcert();
+    }
+});
+
+async function loadConsultaConcert() {
+    const body = document.getElementById('ccBody');
+    body.innerHTML = '<div class="cc-loading"><div class="cc-spinner"></div><div>Carregant dades del concert...</div></div>';
+
+    try {
+        const res = await fetch(getApiBase() + '?action=consulta');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        renderConsulta(data);
+    } catch (err) {
+        body.innerHTML = `<div class="cc-error">
+            <div style="font-size:2em;margin-bottom:10px">&#9888;</div>
+            <div>No s'han pogut carregar les dades</div>
+            <div style="font-size:0.8em;margin-top:6px;opacity:0.6">${err.message}</div>
+            <button class="cc-refresh" onclick="loadConsultaConcert()">&#8635; Reintentar</button>
+        </div>`;
+    }
+}
+
+function renderConsulta(data) {
+    const body = document.getElementById('ccBody');
+    const lastMod = data.lastModified ? new Date(data.lastModified) : null;
+    const dateStr = lastMod
+        ? lastMod.toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : 'Sense dades';
+
+    let html = `<div class="cc-stats">
+        <div class="cc-stat">
+            <div class="cc-stat-icon">&#128197;</div>
+            <div class="cc-stat-val">${lastMod ? lastMod.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' }) : '—'}</div>
+            <div class="cc-stat-label">${lastMod ? lastMod.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' }) + ' h' : 'Última actualització'}</div>
+        </div>
+        <div class="cc-stat">
+            <div class="cc-stat-icon">&#127926;</div>
+            <div class="cc-stat-val">${data.totalRegistrations}</div>
+            <div class="cc-stat-label">Inscrits de ${data.totalPieces} peces</div>
+        </div>
+    </div>`;
+
+    if (data.registrations.length === 0) {
+        html += `<div class="cc-empty">
+            <div class="cc-empty-icon">&#127925;</div>
+            <div>Encara no hi ha cap inscripció</div>
+        </div>`;
+    } else {
+        html += '<div class="cc-section-title">Llista d\'inscrits</div>';
+        const grouped = {};
+        data.registrations.forEach(r => {
+            const key = r.category;
+            if (!grouped[key]) grouped[key] = { icon: r.categoryIcon, items: [] };
+            grouped[key].items.push(r);
+        });
+        for (const [cat, group] of Object.entries(grouped)) {
+            html += `<div class="cc-cat">
+                <div class="cc-cat-name">${group.icon || ''} ${cat} <span style="opacity:0.4;font-weight:400">(${group.items.length})</span></div>`;
+            group.items.forEach(r => {
+                const instrHtml = r.instrument ? `<span class="cc-item-instr">${r.instrument}</span>` : '';
+                const composerBit = r.composer ? ` — ${r.composer}` : '';
+                html += `<div class="cc-item">
+                    <span class="cc-item-name">${r.studentName}</span>
+                    <span class="cc-item-sep">&#9656;</span>
+                    <span class="cc-item-piece">${r.pieceTitle}${composerBit}</span>
+                    ${instrHtml}
+                </div>`;
+            });
+            html += '</div>';
+        }
+    }
+
+    html += `<button class="cc-refresh" onclick="loadConsultaConcert()">&#8635; Actualitzar</button>`;
+    body.innerHTML = html;
+}
 </script>
 
 </body>
