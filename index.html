@@ -76,6 +76,7 @@
         .cat-tool .category-title  { color: #c8a0ff; }
         .cat-manual .category-title { color: #ff8a65; }
         .cat-game .category-title  { color: #66cc66; }
+        .cat-monitor .category-title { color: #2dd4bf; }
         .cat-sailing .category-title { color: #4fc3f7; }
 
         .category-line {
@@ -155,6 +156,13 @@
         .cat-manual .app-btn:hover {
             background: linear-gradient(180deg, #d46840 0%, #a04828 100%);
             box-shadow: 0 4px 18px rgba(255,138,101,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-monitor .app-btn {
+            background: linear-gradient(180deg, #0d9488 0%, #0a706a 100%);
+        }
+        .cat-monitor .app-btn:hover {
+            background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%);
+            box-shadow: 0 4px 18px rgba(45,212,191,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
         }
         .cat-sailing .app-btn {
             background: linear-gradient(180deg, #1a7fb5 0%, #0e5a82 100%);
@@ -667,6 +675,20 @@
         </div>
     </div>
 
+    <div class="category cat-monitor">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Monitoring i &#218;s</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="rituals-palau/api/log.php?dashboard">
+                    <span class="ico">&#128202;</span> Rituals Palau
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="category cat-sailing">
         <img class="category-banner" src="assets/icons/sailing.png" alt="Sailing">
         <div class="category-body">
@@ -735,7 +757,7 @@
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v1.2</p>
+    <p class="footer-version">v1.3</p>
 </footer>
 
 <script>
