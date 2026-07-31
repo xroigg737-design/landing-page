@@ -94,6 +94,41 @@
             flex-wrap: wrap;
             gap: 10px;
         }
+
+        /* Sub-groups within a category */
+        .sub-group {
+            width: 100%;
+            margin-bottom: 14px;
+        }
+        .sub-group:last-child {
+            margin-bottom: 0;
+        }
+        .sub-group-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .sub-group-icon {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        .sub-group-title {
+            font-size: 0.72em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            opacity: 0.55;
+            color: inherit;
+        }
+        .sub-group-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+        .sub-group .apps {
+            padding-left: 4px;
+        }
         .app-btn {
             display: inline-flex;
             align-items: center;
@@ -178,6 +213,19 @@
         .cat-cuina .app-btn:hover {
             background: linear-gradient(180deg, #e8863a 0%, #c06828 100%);
             box-shadow: 0 4px 18px rgba(232,134,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-music {
+            grid-column: 1 / -1;
+        }
+        .cat-music .apps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .cat-music > .category-body > .apps > .sub-group .apps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .cat-sailing .category-banner {
             height: 180px;
@@ -393,6 +441,9 @@
             .category-banner { height: 100px; }
             .category-body { padding: 12px 16px 14px; }
             .app-btn { padding: 9px 16px; font-size: 0.85em; }
+            .cat-music .apps {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -412,36 +463,65 @@
                 <span class="category-line"></span>
             </div>
             <div class="apps">
-                <a class="app-btn" href="entrenador-partitures/index.html">
-                    <span class="ico">&#9835;</span> Entrenador de Partitures
-                </a>
-                <a class="app-btn" href="entrenador-partitures/acords.html">
-                    <span class="ico">&#9836;</span> Analitzador d'Acords
-                </a>
-                <a class="app-btn" href="/acords/" data-local="http://localhost:5070">
-                    <span class="ico">&#127929;</span> Annotador d'Acords PDF
-                </a>
-                <a class="app-btn" href="/repertori/" data-local="http://localhost:5075">
-                    <span class="ico">&#9834;</span> Repertori
-                </a>
-                <a class="app-btn" href="/partitura/" data-local="http://localhost:5050">
-                    <span class="ico">&#9833;</span> Conversor MusicXML
-                </a>
-                <a class="app-btn" href="concert-10e-aniversari/index.html">
-                    <span class="ico">&#127895;</span> Concert 10è Aniversari
-                </a>
-                <a class="app-btn" href="rituals-palau/index.html">
-                    <span class="ico">&#127963;</span> Rituals al Palau 26-27
-                </a>
-                <a class="app-btn" href="musicaolerdola/index.html">
-                    <span class="ico">&#127926;</span> Amics Música Olèrdola
-                </a>
-                <a class="app-btn" href="piano-search/index.html">
-                    <span class="ico">&#127929;</span> Piano Search
-                </a>
-                <a class="app-btn" href="/quina-dificultat/" data-local="http://localhost:5004">
-                    <span class="ico">&#127932;</span> Quina Dificultat?
-                </a>
+                <div class="sub-group">
+                    <div class="sub-group-header">
+                        <span class="sub-group-icon">&#127891;</span>
+                        <span class="sub-group-title">Aprenentatge</span>
+                        <span class="sub-group-line"></span>
+                    </div>
+                    <div class="apps">
+                        <a class="app-btn" href="entrenador-partitures/index.html">
+                            <span class="ico">&#9835;</span> Entrenador de Partitures
+                        </a>
+                        <a class="app-btn" href="entrenador-partitures/acords.html">
+                            <span class="ico">&#9836;</span> Analitzador d'Acords
+                        </a>
+                        <a class="app-btn" href="/quina-dificultat/" data-local="http://localhost:5004">
+                            <span class="ico">&#127932;</span> Quina Dificultat?
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sub-group">
+                    <div class="sub-group-header">
+                        <span class="sub-group-icon">&#128295;</span>
+                        <span class="sub-group-title">Eines de Músic</span>
+                        <span class="sub-group-line"></span>
+                    </div>
+                    <div class="apps">
+                        <a class="app-btn" href="/acords/" data-local="http://localhost:5070">
+                            <span class="ico">&#127929;</span> Annotador d'Acords PDF
+                        </a>
+                        <a class="app-btn" href="/repertori/" data-local="http://localhost:5075">
+                            <span class="ico">&#9834;</span> Repertori
+                        </a>
+                        <a class="app-btn" href="/partitura/" data-local="http://localhost:5050">
+                            <span class="ico">&#9833;</span> Conversor MusicXML
+                        </a>
+                        <a class="app-btn" href="piano-search/index.html">
+                            <span class="ico">&#127929;</span> Piano Search
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sub-group">
+                    <div class="sub-group-header">
+                        <span class="sub-group-icon">&#127926;</span>
+                        <span class="sub-group-title">Concerts i Programes</span>
+                        <span class="sub-group-line"></span>
+                    </div>
+                    <div class="apps">
+                        <a class="app-btn" href="concert-10e-aniversari/index.html">
+                            <span class="ico">&#127895;</span> Concert 10è Aniversari
+                        </a>
+                        <a class="app-btn" href="rituals-palau/index.html">
+                            <span class="ico">&#127963;</span> Rituals al Palau 26-27
+                        </a>
+                        <a class="app-btn" href="musicaolerdola/index.html">
+                            <span class="ico">&#127926;</span> Amics Música Olèrdola
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -578,7 +658,7 @@
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v2.2</p>
+    <p class="footer-version">v2.3</p>
 </footer>
 
 <script>
