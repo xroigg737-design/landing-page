@@ -30,20 +30,11 @@
             transition: transform .2s;
         }
         nav a.home:hover { transform: scale(1.15); }
-        nav .nav-title {
-            font-weight: 700;
-            font-size: 0.95em;
-            color: #fff;
-        }
-        nav .nav-sep {
-            color: rgba(255,255,255,0.2);
-        }
+        nav .nav-title { font-weight: 700; font-size: 0.95em; color: #fff; }
+        nav .nav-sep { color: rgba(255,255,255,0.2); }
 
         /* HERO */
-        .hero {
-            text-align: center;
-            padding: 48px 20px 20px;
-        }
+        .hero { text-align: center; padding: 40px 20px 16px; }
         .hero h1 {
             font-size: 2.4em;
             font-weight: 800;
@@ -51,369 +42,221 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .hero .subtitle {
             font-size: 1.05em;
             color: rgba(255,255,255,0.55);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
-        .pills {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
+        .pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 6px; }
         .pill {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 0.78em;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            border: 1px solid rgba(255,215,0,0.25);
-            color: #ffd700;
+            display: inline-block; padding: 5px 14px; border-radius: 20px;
+            font-size: 0.78em; font-weight: 600; letter-spacing: 0.3px;
+            border: 1px solid rgba(255,215,0,0.25); color: #ffd700;
             background: rgba(255,215,0,0.06);
         }
 
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
+
         /* UPLOAD ZONE */
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 0 20px 60px;
-        }
         .upload-zone {
-            border: 2px dashed rgba(255,215,0,0.25);
-            border-radius: 16px;
-            padding: 48px 24px;
-            text-align: center;
-            background: rgba(255,255,255,0.02);
-            transition: all .3s;
-            cursor: pointer;
-            position: relative;
+            border: 2px dashed rgba(255,215,0,0.25); border-radius: 16px;
+            padding: 40px 24px; text-align: center;
+            background: rgba(255,255,255,0.02); transition: all .3s;
+            cursor: pointer; position: relative;
         }
-        .upload-zone.dragover {
-            border-color: #ffd700;
-            background: rgba(255,215,0,0.06);
-        }
-        .upload-zone .upload-icon {
-            font-size: 3em;
-            margin-bottom: 12px;
-            opacity: 0.6;
-        }
-        .upload-zone .upload-text {
-            font-size: 1.05em;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 6px;
-        }
-        .upload-zone .upload-text strong {
-            color: #ffd700;
-        }
-        .upload-zone .upload-hint {
-            font-size: 0.82em;
-            color: rgba(255,255,255,0.35);
-        }
-        .upload-zone input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
+        .upload-zone.dragover { border-color: #ffd700; background: rgba(255,215,0,0.06); }
+        .upload-zone .upload-icon { font-size: 3em; margin-bottom: 10px; opacity: 0.6; }
+        .upload-zone .upload-text { font-size: 1.05em; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+        .upload-zone .upload-text strong { color: #ffd700; }
+        .upload-zone .upload-hint { font-size: 0.82em; color: rgba(255,255,255,0.35); }
+        .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
         .file-selected {
-            display: none;
-            align-items: center;
-            gap: 10px;
-            margin-top: 16px;
-            padding: 10px 16px;
-            border-radius: 10px;
-            background: rgba(255,215,0,0.08);
-            border: 1px solid rgba(255,215,0,0.2);
+            display: none; align-items: center; gap: 10px; margin-top: 14px;
+            padding: 10px 16px; border-radius: 10px;
+            background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2);
         }
         .file-selected.show { display: flex; }
-        .file-selected .file-name {
-            font-weight: 600;
-            color: #ffd700;
-            flex: 1;
-            text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .file-selected .file-remove {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            font-size: 1.2em;
-            padding: 2px 6px;
-        }
+        .file-selected .file-name { font-weight: 600; color: #ffd700; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-selected .file-size { font-size: 0.8em; color: rgba(255,255,255,0.35); flex-shrink: 0; }
+        .file-selected .file-remove { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 1.2em; padding: 2px 6px; }
         .file-selected .file-remove:hover { color: #ff6060; }
 
         /* OPTIONS ROW */
-        .options-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .notation-toggle {
-            display: flex;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
+        .options-row { display: none; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
+        .options-row.show { display: flex; }
+        .notation-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
         .notation-toggle button {
-            padding: 8px 18px;
-            border: none;
-            background: rgba(255,255,255,0.04);
-            color: rgba(255,255,255,0.5);
-            font-size: 0.85em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
+            padding: 8px 18px; border: none; background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.5); font-size: 0.85em; font-weight: 600;
+            cursor: pointer; transition: all .2s;
         }
-        .notation-toggle button.active {
-            background: rgba(255,215,0,0.15);
-            color: #ffd700;
+        .notation-toggle button.active { background: rgba(255,215,0,0.15); color: #ffd700; }
+        .notation-toggle button:hover:not(.active) { background: rgba(255,255,255,0.08); }
+
+        /* Pages input (for PDF) */
+        .pages-input {
+            display: none; align-items: center; gap: 8px;
         }
-        .notation-toggle button:hover:not(.active) {
-            background: rgba(255,255,255,0.08);
+        .pages-input.show { display: flex; }
+        .pages-input label { font-size: 0.82em; color: rgba(255,255,255,0.5); }
+        .pages-input input {
+            width: 100px; padding: 7px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+            color: #fff; font-size: 0.85em;
         }
+        .pages-input input::placeholder { color: rgba(255,255,255,0.25); }
 
         .btn-analyze {
-            padding: 12px 36px;
-            border: none;
-            border-radius: 10px;
+            padding: 12px 36px; border: none; border-radius: 10px;
             background: linear-gradient(180deg, #d4920a 0%, #a06800 100%);
-            color: #fff;
-            font-size: 1em;
-            font-weight: 700;
-            cursor: pointer;
+            color: #fff; font-size: 1em; font-weight: 700; cursor: pointer;
             transition: all .2s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
         }
-        .btn-analyze:hover {
-            background: linear-gradient(180deg, #e8a420 0%, #b87800 100%);
-            box-shadow: 0 4px 18px rgba(255,170,0,0.35);
-            transform: translateY(-1px);
-        }
-        .btn-analyze:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-analyze:hover { background: linear-gradient(180deg, #e8a420 0%, #b87800 100%); box-shadow: 0 4px 18px rgba(255,170,0,0.35); transform: translateY(-1px); }
+        .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
         /* LOADING */
-        .loading-panel {
-            display: none;
-            text-align: center;
-            padding: 48px 20px;
-        }
+        .loading-panel { display: none; text-align: center; padding: 48px 20px; }
         .loading-panel.show { display: block; }
         .spinner {
             width: 48px; height: 48px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #ffd700;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
+            border: 3px solid rgba(255,255,255,0.1); border-top-color: #ffd700;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-steps {
-            list-style: none;
-            display: inline-flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: left;
-        }
-        .loading-steps li {
-            font-size: 0.9em;
-            color: rgba(255,255,255,0.35);
-            transition: color .3s;
-        }
-        .loading-steps li.active {
-            color: #ffd700;
-        }
-        .loading-steps li.done {
-            color: rgba(100,200,100,0.7);
-        }
-        .loading-steps li::before {
-            content: '';
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            margin-right: 10px;
-            background: rgba(255,255,255,0.15);
-            vertical-align: middle;
-        }
-        .loading-steps li.active::before {
-            background: #ffd700;
-            box-shadow: 0 0 8px rgba(255,215,0,0.5);
-        }
-        .loading-steps li.done::before {
-            background: #66cc66;
-        }
+        .loading-steps { list-style: none; display: inline-flex; flex-direction: column; gap: 8px; text-align: left; }
+        .loading-steps li { font-size: 0.9em; color: rgba(255,255,255,0.35); transition: color .3s; }
+        .loading-steps li.active { color: #ffd700; }
+        .loading-steps li.done { color: rgba(100,200,100,0.7); }
+        .loading-steps li::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; background: rgba(255,255,255,0.15); vertical-align: middle; }
+        .loading-steps li.active::before { background: #ffd700; box-shadow: 0 0 8px rgba(255,215,0,0.5); }
+        .loading-steps li.done::before { background: #66cc66; }
+        .loading-hint { margin-top: 16px; font-size: 0.82em; color: rgba(255,255,255,0.25); font-style: italic; }
 
         /* ERROR */
         .error-box {
-            display: none;
-            margin-top: 20px;
-            padding: 16px 20px;
-            border-radius: 12px;
-            background: rgba(255,60,60,0.08);
-            border: 1px solid rgba(255,60,60,0.25);
-            color: #ff8080;
-            font-size: 0.92em;
-            text-align: center;
+            display: none; margin-top: 20px; padding: 16px 20px; border-radius: 12px;
+            background: rgba(255,60,60,0.08); border: 1px solid rgba(255,60,60,0.25);
+            color: #ff8080; font-size: 0.92em; text-align: center;
         }
         .error-box.show { display: block; }
 
         /* RESULTS */
-        #results {
-            display: none;
-            margin-top: 32px;
-        }
-        #results.show { display: block; }
+        #results { display: none; margin-top: 28px; }
+        #results.show { display: block; animation: fadeIn .4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* SUMMARY HEADER */
         .result-summary {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 20px 24px; margin-bottom: 20px;
         }
-        .result-summary h2 {
-            font-size: 1.3em;
-            color: #ffd700;
-            margin-bottom: 12px;
-        }
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-        .summary-item {
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            padding: 12px 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .summary-label {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: rgba(255,255,255,0.4);
-            margin-bottom: 4px;
-        }
-        .summary-value {
-            font-size: 1.05em;
-            font-weight: 600;
-            color: #fff;
-        }
+        .result-summary h2 { font-size: 1.3em; color: #ffd700; margin-bottom: 12px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+        .summary-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .summary-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+        .summary-value { font-size: 1.05em; font-weight: 600; color: #fff; }
         .modulation-tag {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.8em;
-            font-weight: 600;
-            margin: 2px 4px 2px 0;
-            background: rgba(160,80,255,0.12);
-            border: 1px solid rgba(160,80,255,0.25);
-            color: #c8a0ff;
+            display: inline-block; padding: 3px 10px; border-radius: 6px;
+            font-size: 0.8em; font-weight: 600; margin: 2px 4px 2px 0;
+            background: rgba(160,80,255,0.12); border: 1px solid rgba(160,80,255,0.25); color: #c8a0ff;
         }
+
+        /* STATISTICS */
+        .stats-panel {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 8px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px;
+            border: 1px solid rgba(255,255,255,0.05); text-align: center;
+        }
+        .stat-card .stat-count { font-size: 1.8em; font-weight: 800; line-height: 1.1; }
+        .stat-card .stat-lbl { font-size: 0.68em; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+        .stat-card .stat-pct { font-size: 0.72em; color: rgba(255,255,255,0.3); }
+        .stat-card .stat-meter { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); margin-top: 8px; overflow: hidden; }
+        .stat-card .stat-meter-fill { height: 100%; border-radius: 2px; }
+
+        /* HARMONIC FLOW TIMELINE */
+        .flow-section { margin-bottom: 20px; }
+        .flow-section h3 { font-size: 0.9em; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+        .harmonic-flow {
+            display: flex; overflow-x: auto; gap: 3px; padding: 10px 0 14px;
+            scrollbar-width: thin; scrollbar-color: rgba(255,215,0,0.3) transparent;
+        }
+        .harmonic-flow::-webkit-scrollbar { height: 6px; }
+        .harmonic-flow::-webkit-scrollbar-track { background: transparent; }
+        .harmonic-flow::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.25); border-radius: 3px; }
+        .hf-measure {
+            flex-shrink: 0; min-width: 54px; padding: 7px 6px; border-radius: 6px;
+            text-align: center; cursor: pointer; transition: all .2s;
+            border: 1px solid transparent; position: relative;
+        }
+        .hf-measure:hover { border-color: rgba(255,255,255,0.25); transform: scale(1.06); z-index: 1; }
+        .hf-measure.active { border-color: #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.2); }
+        .hf-num { font-size: 0.55em; opacity: 0.4; display: block; margin-bottom: 2px; }
+        .hf-chord { font-size: 0.78em; font-weight: 700; color: #fff; display: block; line-height: 1.2; }
+        .hf-roman { font-size: 0.65em; opacity: 0.6; display: block; }
+        .hf-cadence { position: absolute; top: -4px; right: -2px; font-size: 0.55em; background: rgba(255,215,0,0.9); color: #000; padding: 1px 4px; border-radius: 3px; font-weight: 700; }
+        .hf-T  { background: rgba(34,197,94,0.15); }
+        .hf-S  { background: rgba(59,130,246,0.15); }
+        .hf-D  { background: rgba(249,115,22,0.15); }
+        .hf-DD { background: rgba(168,85,247,0.15); }
+        .hf-SD { background: rgba(236,72,153,0.15); }
+        .hf-unknown { background: rgba(255,255,255,0.05); }
+        .hf-modulation {
+            flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+            padding: 0 6px; font-size: 0.6em; color: #c8a0ff; font-weight: 700; white-space: nowrap;
+        }
+        .hf-mod-arrow { font-size: 1.2em; }
 
         /* TOOLBAR */
         .result-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
         }
-        .result-toolbar h3 {
-            font-size: 1.1em;
-            color: rgba(255,255,255,0.7);
+        .result-toolbar h3 { font-size: 1.05em; color: rgba(255,255,255,0.7); }
+        .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-tool {
+            padding: 7px 14px; border: 1px solid rgba(255,215,0,0.25); border-radius: 8px;
+            background: rgba(255,215,0,0.06); color: #ffd700; font-size: 0.8em; font-weight: 600;
+            cursor: pointer; transition: all .2s; white-space: nowrap;
         }
-        .btn-copy {
-            padding: 8px 18px;
-            border: 1px solid rgba(255,215,0,0.25);
-            border-radius: 8px;
-            background: rgba(255,215,0,0.06);
-            color: #ffd700;
-            font-size: 0.85em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .btn-copy:hover {
-            background: rgba(255,215,0,0.15);
-            border-color: rgba(255,215,0,0.45);
-        }
+        .btn-tool:hover { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.45); }
+        .btn-tool.active-feedback { background: rgba(100,200,100,0.15); border-color: rgba(100,200,100,0.4); color: #66cc66; }
 
-        /* FUNCTION LEGEND */
-        .fn-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
+        /* FUNCTION LEGEND (clickable filters) */
+        .fn-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
         .fn-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.78em;
-            color: rgba(255,255,255,0.5);
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.78em; color: rgba(255,255,255,0.5);
+            cursor: pointer; transition: opacity .2s; user-select: none;
+            padding: 3px 8px; border-radius: 6px; border: 1px solid transparent;
         }
-        .fn-legend-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-        }
+        .fn-legend-item:hover { border-color: rgba(255,255,255,0.1); }
+        .fn-legend-item.dimmed { opacity: 0.25; }
+        .fn-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
         /* MEASURE CARDS */
         .measures-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;
         }
         .m-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 12px;
-            padding: 16px;
-            transition: border-color .2s, transform .15s;
-            position: relative;
-            overflow: hidden;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px; padding: 14px; transition: all .25s;
+            position: relative; overflow: hidden;
         }
-        .m-card:hover {
-            border-color: rgba(255,255,255,0.15);
-            transform: translateY(-2px);
-        }
-        .m-card-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .m-num {
-            font-size: 0.72em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: rgba(255,255,255,0.3);
-        }
-        .fn-badge {
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.72em;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+        .m-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .m-card.highlight { border-color: #ffd700; box-shadow: 0 0 16px rgba(255,215,0,0.15); }
+        .m-card.filtered-out { display: none; }
+        .m-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+        .m-num { font-size: 0.72em; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.3); }
+        .fn-badge { padding: 3px 10px; border-radius: 6px; font-size: 0.72em; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
         .fn-T  { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
         .fn-S  { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
         .fn-D  { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
@@ -421,75 +264,25 @@
         .fn-SD { background: rgba(236,72,153,0.15); color: #f472b6; border: 1px solid rgba(236,72,153,0.3); }
         .fn-unknown { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
 
-        .m-chord {
-            font-size: 1.45em;
-            font-weight: 800;
-            color: #ffd700;
-            line-height: 1.2;
-        }
-        .m-roman {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #fff;
-            margin-top: 2px;
-        }
-        .m-details {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .m-detail-row {
-            font-size: 0.8em;
-            color: rgba(255,255,255,0.45);
-        }
-        .m-detail-row strong {
-            color: rgba(255,255,255,0.6);
-        }
-
-        .nh-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 6px;
-        }
+        .m-chord { font-size: 1.4em; font-weight: 800; color: #ffd700; line-height: 1.2; }
+        .m-roman { font-size: 1.15em; font-weight: 700; color: #fff; margin-top: 2px; }
+        .m-details { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+        .m-detail-row { font-size: 0.8em; color: rgba(255,255,255,0.45); }
+        .m-detail-row strong { color: rgba(255,255,255,0.6); }
+        .nh-pills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
         .nh-pill {
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.72em;
-            font-weight: 600;
-            background: rgba(249,115,22,0.12);
-            border: 1px solid rgba(249,115,22,0.25);
-            color: #fb923c;
+            padding: 2px 8px; border-radius: 5px; font-size: 0.72em; font-weight: 600;
+            background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); color: #fb923c;
         }
-
         .cadence-badge {
-            display: inline-block;
-            margin-top: 6px;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.75em;
-            font-weight: 700;
-            background: rgba(255,215,0,0.1);
-            border: 1px solid rgba(255,215,0,0.3);
-            color: #ffd700;
+            display: inline-block; margin-top: 5px; padding: 3px 10px; border-radius: 6px;
+            font-size: 0.75em; font-weight: 700;
+            background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #ffd700;
         }
+        .m-obs { margin-top: 6px; font-size: 0.78em; font-style: italic; color: rgba(255,255,255,0.35); line-height: 1.4; }
 
-        .m-obs {
-            margin-top: 8px;
-            font-size: 0.78em;
-            font-style: italic;
-            color: rgba(255,255,255,0.35);
-            line-height: 1.4;
-        }
-
-        /* FUNCTION BAR (top border accent) */
-        .m-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-        }
+        /* FUNCTION BAR */
+        .m-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
         .m-card.ft-T::before  { background: #22c55e; }
         .m-card.ft-S::before  { background: #3b82f6; }
         .m-card.ft-D::before  { background: #f97316; }
@@ -498,43 +291,30 @@
 
         /* PEDAGOGICAL SUMMARY */
         .pedagogy {
-            margin-top: 28px;
-            background: rgba(255,215,0,0.04);
-            border: 1px solid rgba(255,215,0,0.15);
-            border-radius: 14px;
-            padding: 20px 24px;
+            margin-top: 24px; background: rgba(255,215,0,0.04);
+            border: 1px solid rgba(255,215,0,0.15); border-radius: 14px; padding: 20px 24px;
         }
-        .pedagogy h3 {
-            font-size: 1em;
-            color: #ffd700;
-            margin-bottom: 10px;
-        }
-        .pedagogy p {
-            font-size: 0.92em;
-            color: rgba(255,255,255,0.65);
-            line-height: 1.65;
-        }
+        .pedagogy h3 { font-size: 1em; color: #ffd700; margin-bottom: 10px; }
+        .pedagogy p { font-size: 0.92em; color: rgba(255,255,255,0.65); line-height: 1.65; margin-bottom: 10px; }
+        .pedagogy p:last-child { margin-bottom: 0; }
 
         /* FOOTER */
-        footer {
-            text-align: center;
-            padding: 32px 20px;
-            color: rgba(255,255,255,0.15);
-            font-size: 0.75em;
-        }
+        footer { text-align: center; padding: 32px 20px; color: rgba(255,255,255,0.15); font-size: 0.75em; }
 
         /* RESPONSIVE */
         @media (max-width: 600px) {
-            .hero { padding: 32px 16px 16px; }
+            .hero { padding: 28px 16px 12px; }
             .hero h1 { font-size: 1.8em; }
             .container { padding: 0 14px 40px; }
-            .upload-zone { padding: 32px 16px; }
+            .upload-zone { padding: 28px 16px; }
             .measures-grid { grid-template-columns: 1fr 1fr; }
             .summary-grid { grid-template-columns: 1fr; }
+            .stats-panel { grid-template-columns: repeat(3, 1fr); }
             nav { padding: 12px 16px; }
         }
         @media (max-width: 380px) {
             .measures-grid { grid-template-columns: 1fr; }
+            .stats-panel { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -553,7 +333,9 @@
         <span class="pill">Xifrat rom&#224;</span>
         <span class="pill">Funcions tonals</span>
         <span class="pill">Cad&#232;ncies</span>
+        <span class="pill">Modulacions</span>
         <span class="pill">Notes no harm&#242;niques</span>
+        <span class="pill">PDF i MusicXML</span>
     </div>
 </div>
 
@@ -562,20 +344,25 @@
     <!-- UPLOAD -->
     <div class="upload-zone" id="uploadZone">
         <div class="upload-icon">&#127932;</div>
-        <p class="upload-text">Arrossega un fitxer <strong>MusicXML</strong> aqu&#237;</p>
-        <p class="upload-hint">o fes clic per seleccionar &middot; .xml .musicxml .mxl</p>
-        <p class="upload-hint" style="margin-top:8px;font-style:italic;">Exporta la partitura PDF des de PlayScore2 com a MusicXML</p>
-        <input type="file" id="fileInput" accept=".xml,.musicxml,.mxl">
+        <p class="upload-text">Arrossega un fitxer <strong>PDF</strong> o <strong>MusicXML</strong> aqu&#237;</p>
+        <p class="upload-hint">o fes clic per seleccionar &middot; .pdf .xml .musicxml .mxl</p>
+        <p class="upload-hint" style="margin-top:6px;font-style:italic;">Exporta des de MuseScore, Finale, Sibelius... o puja directament el PDF de la partitura</p>
+        <input type="file" id="fileInput" accept=".pdf,.xml,.musicxml,.mxl">
     </div>
     <div class="file-selected" id="fileSelected">
         <span class="file-name" id="fileName"></span>
+        <span class="file-size" id="fileSize"></span>
         <button class="file-remove" id="fileRemove" title="Treure">&times;</button>
     </div>
 
-    <div class="options-row" id="optionsRow" style="display:none;">
+    <div class="options-row" id="optionsRow">
         <div class="notation-toggle" id="notationToggle">
             <button class="active" data-val="latin">Do Re Mi</button>
             <button data-val="anglo">C D E</button>
+        </div>
+        <div class="pages-input" id="pagesInput">
+            <label>P&#224;gines:</label>
+            <input type="text" id="pagesValue" placeholder="1-3, 5">
         </div>
         <button class="btn-analyze" id="btnAnalyze">&#9835; Analitzar</button>
     </div>
@@ -585,9 +372,10 @@
         <div class="spinner"></div>
         <ul class="loading-steps" id="loadingSteps">
             <li id="step1">Llegint partitura...</li>
-            <li id="step2">Analitzant harmonia...</li>
+            <li id="step2">Analitzant harmonia amb IA...</li>
             <li id="step3">Preparant resultats...</li>
         </ul>
+        <p class="loading-hint">L'an&#224;lisi pot trigar 15-40 segons segons la llarg&#224;ria</p>
     </div>
 
     <!-- ERROR -->
@@ -597,17 +385,30 @@
     <div id="results">
         <div class="result-summary" id="resultSummary"></div>
 
-        <div class="result-toolbar">
-            <h3>An&#224;lisi comp&#224;s per comp&#224;s</h3>
-            <button class="btn-copy" id="btnCopy">&#128203; Copiar an&#224;lisi</button>
+        <!-- STATISTICS -->
+        <div class="stats-panel" id="statsPanel"></div>
+
+        <!-- HARMONIC FLOW TIMELINE -->
+        <div class="flow-section">
+            <h3>Flux harm&#242;nic</h3>
+            <div class="harmonic-flow" id="harmonicFlow"></div>
         </div>
 
-        <div class="fn-legend">
-            <div class="fn-legend-item"><span class="fn-legend-dot" style="background:#22c55e"></span> T&#242;nica (T)</div>
-            <div class="fn-legend-item"><span class="fn-legend-dot" style="background:#3b82f6"></span> Subdominant (S)</div>
-            <div class="fn-legend-item"><span class="fn-legend-dot" style="background:#f97316"></span> Dominant (D)</div>
-            <div class="fn-legend-item"><span class="fn-legend-dot" style="background:#a855f7"></span> Doble Dominant (DD)</div>
-            <div class="fn-legend-item"><span class="fn-legend-dot" style="background:#ec4899"></span> Subdominant Dor. (SD)</div>
+        <div class="result-toolbar">
+            <h3>An&#224;lisi comp&#224;s per comp&#224;s</h3>
+            <div class="toolbar-actions">
+                <button class="btn-tool" id="btnCopy">&#128203; Copiar</button>
+                <button class="btn-tool" id="btnExportJson">&#128229; JSON</button>
+                <button class="btn-tool" id="btnExportTxt">&#128196; Text</button>
+            </div>
+        </div>
+
+        <div class="fn-legend" id="fnLegend">
+            <div class="fn-legend-item" data-fn="T"><span class="fn-legend-dot" style="background:#22c55e"></span> T&#242;nica (T)</div>
+            <div class="fn-legend-item" data-fn="S"><span class="fn-legend-dot" style="background:#3b82f6"></span> Subdominant (S)</div>
+            <div class="fn-legend-item" data-fn="D"><span class="fn-legend-dot" style="background:#f97316"></span> Dominant (D)</div>
+            <div class="fn-legend-item" data-fn="DD"><span class="fn-legend-dot" style="background:#a855f7"></span> Doble Dom. (DD)</div>
+            <div class="fn-legend-item" data-fn="SD"><span class="fn-legend-dot" style="background:#ec4899"></span> Subdom. Dor. (SD)</div>
         </div>
 
         <div class="measures-grid" id="measuresGrid"></div>
@@ -618,18 +419,23 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v1.0
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.0
 </footer>
 
 <script>
 (function(){
     const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
     const uploadZone = $('#uploadZone');
     const fileInput = $('#fileInput');
     const fileSelected = $('#fileSelected');
     const fileName = $('#fileName');
+    const fileSize = $('#fileSize');
     const fileRemove = $('#fileRemove');
     const optionsRow = $('#optionsRow');
+    const pagesInput = $('#pagesInput');
+    const pagesValue = $('#pagesValue');
     const btnAnalyze = $('#btnAnalyze');
     const loadingPanel = $('#loadingPanel');
     const errorBox = $('#errorBox');
@@ -637,20 +443,62 @@
     const measuresGrid = $('#measuresGrid');
     const pedagogy = $('#pedagogy');
     const resultSummary = $('#resultSummary');
+    const harmonicFlow = $('#harmonicFlow');
+    const statsPanel = $('#statsPanel');
     const btnCopy = $('#btnCopy');
+    const btnExportJson = $('#btnExportJson');
+    const btnExportTxt = $('#btnExportTxt');
+    const fnLegend = $('#fnLegend');
 
     let selectedFile = null;
     let notation = 'latin';
     let analysisData = null;
+    let activeFilters = new Set(['T','S','D','DD','SD','unknown']);
 
     // Notation toggle
-    document.querySelectorAll('#notationToggle button').forEach(btn => {
+    $$('#notationToggle button').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('#notationToggle button').forEach(b => b.classList.remove('active'));
+            $$('#notationToggle button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             notation = btn.dataset.val;
         });
     });
+
+    // Filter legend
+    $$('.fn-legend-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const fn = item.dataset.fn;
+            if (activeFilters.has(fn)) {
+                activeFilters.delete(fn);
+                item.classList.add('dimmed');
+            } else {
+                activeFilters.add(fn);
+                item.classList.remove('dimmed');
+            }
+            applyFilters();
+        });
+    });
+
+    function getFnClass(fn) {
+        const u = (fn || '').toUpperCase();
+        if (u === 'T' || u === 'TP') return 'T';
+        if (u === 'S' || u === 'SP') return 'S';
+        if (u === 'D' || u === 'DP') return 'D';
+        if (u === 'DD') return 'DD';
+        if (u === 'SD') return 'SD';
+        return 'unknown';
+    }
+
+    function applyFilters() {
+        $$('.m-card').forEach(card => {
+            const fn = card.dataset.fn;
+            card.classList.toggle('filtered-out', !activeFilters.has(fn));
+        });
+        $$('.hf-measure').forEach(m => {
+            const fn = m.dataset.fn;
+            m.style.opacity = activeFilters.has(fn) ? '1' : '0.15';
+        });
+    }
 
     // File handling
     uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
@@ -660,28 +508,33 @@
         uploadZone.classList.remove('dragover');
         if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
     });
-
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length) handleFile(fileInput.files[0]);
-    });
-
+    fileInput.addEventListener('change', () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
     fileRemove.addEventListener('click', () => {
         selectedFile = null;
         fileSelected.classList.remove('show');
-        optionsRow.style.display = 'none';
+        optionsRow.classList.remove('show');
+        pagesInput.classList.remove('show');
         fileInput.value = '';
     });
 
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+        return (bytes/(1024*1024)).toFixed(1) + ' MB';
+    }
+
     function handleFile(f) {
         const ext = f.name.split('.').pop().toLowerCase();
-        if (!['xml','musicxml','mxl'].includes(ext)) {
-            showError("Format no suportat. Utilitza fitxers .xml, .musicxml o .mxl");
+        if (!['xml','musicxml','mxl','pdf'].includes(ext)) {
+            showError("Format no suportat. Utilitza fitxers .pdf, .xml, .musicxml o .mxl");
             return;
         }
         selectedFile = f;
         fileName.textContent = f.name;
+        fileSize.textContent = formatSize(f.size);
         fileSelected.classList.add('show');
-        optionsRow.style.display = 'flex';
+        optionsRow.classList.add('show');
+        pagesInput.classList.toggle('show', ext === 'pdf');
         hideError();
         results.classList.remove('show');
     }
@@ -700,6 +553,8 @@
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('notation', notation);
+        const pages = pagesValue.value.trim();
+        if (pages) formData.append('pages', pages);
 
         try {
             await delay(400);
@@ -709,12 +564,13 @@
             const API = isLocal ? 'http://localhost:5070' : '/acords';
             const resp = await fetch(API + '/harmonic-analysis', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin',
             });
 
             if (!resp.ok) {
                 const errData = await resp.json().catch(() => null);
-                throw new Error(errData?.error || `Error del servidor (${resp.status})`);
+                throw new Error(errData?.error || 'Error del servidor (' + resp.status + ')');
             }
 
             setStep(3);
@@ -724,6 +580,7 @@
             renderResults(analysisData);
             hideLoading();
             results.classList.add('show');
+            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } catch (err) {
             hideLoading();
             showError(err.message || "Error inesperat durant l'anàlisi");
@@ -758,66 +615,161 @@
     }
 
     function renderResults(data) {
-        // Summary
-        let summaryHtml = '<h2>Resum de l\'anàlisi</h2><div class="summary-grid">';
-        summaryHtml += summaryItem('Tonalitat', data.key || '—');
-        if (data.time_signature) summaryHtml += summaryItem('Compàs', data.time_signature);
-        summaryHtml += summaryItem('Compassos', data.measures ? data.measures.length : '—');
-        if (data.structure) summaryHtml += summaryItem('Estructura', data.structure);
-        summaryHtml += '</div>';
+        // Reset filters
+        activeFilters = new Set(['T','S','D','DD','SD','unknown']);
+        $$('.fn-legend-item').forEach(i => i.classList.remove('dimmed'));
+
+        renderSummary(data);
+        renderStats(data);
+        renderFlow(data);
+        renderMeasures(data);
+        renderPedagogy(data);
+    }
+
+    function renderSummary(data) {
+        let h = '<h2>Resum de l\'anàlisi</h2><div class="summary-grid">';
+        h += summaryItem('Tonalitat', data.key || '—');
+        if (data.time_signature) h += summaryItem('Compàs', data.time_signature);
+        h += summaryItem('Compassos', data.measures ? data.measures.length : '—');
+        if (data.structure) h += summaryItem('Estructura', data.structure);
+        h += '</div>';
 
         if (data.modulations && data.modulations.length) {
-            summaryHtml += '<div style="margin-top:14px;"><span class="summary-label">MODULACIONS</span><div style="margin-top:6px;">';
-            data.modulations.forEach(m => { summaryHtml += '<span class="modulation-tag">' + esc(m) + '</span>'; });
-            summaryHtml += '</div></div>';
+            h += '<div style="margin-top:12px;"><span class="summary-label">MODULACIONS</span><div style="margin-top:6px;">';
+            data.modulations.forEach(m => { h += '<span class="modulation-tag">' + esc(m) + '</span>'; });
+            h += '</div></div>';
         }
-        resultSummary.innerHTML = summaryHtml;
+        resultSummary.innerHTML = h;
+    }
 
-        // Measures
-        measuresGrid.innerHTML = '';
-        if (data.measures && data.measures.length) {
-            data.measures.forEach(m => {
-                const fn = m.function || '';
-                const fnUpper = fn.toUpperCase();
-                const fnClass = fnUpper === 'T' || fnUpper === 'TP' ? 'T'
-                    : fnUpper === 'S' || fnUpper === 'SP' ? 'S'
-                    : fnUpper === 'D' || fnUpper === 'DP' ? 'D'
-                    : fnUpper === 'DD' ? 'DD'
-                    : fnUpper === 'SD' ? 'SD'
-                    : 'unknown';
-                const card = document.createElement('div');
-                card.className = 'm-card ft-' + fnClass;
+    function renderStats(data) {
+        if (!data.measures || !data.measures.length) { statsPanel.innerHTML = ''; return; }
+        const counts = { T:0, S:0, D:0, DD:0, SD:0, unknown:0 };
+        const colors = { T:'#22c55e', S:'#3b82f6', D:'#f97316', DD:'#a855f7', SD:'#ec4899', unknown:'rgba(255,255,255,0.2)' };
+        const labels = { T:'Tònica', S:'Subdom.', D:'Dominant', DD:'Doble D.', SD:'SD' };
+        const total = data.measures.length;
+        let cadenceCount = 0;
+        let nhCount = 0;
 
-                let html = '<div class="m-card-top">';
-                html += '<span class="m-num">Compàs ' + m.measure + '</span>';
-                html += '<span class="fn-badge fn-' + fnClass + '">' + (fn || '?') + '</span>';
-                html += '</div>';
+        data.measures.forEach(m => {
+            counts[getFnClass(m.function)]++;
+            if (m.cadence) cadenceCount++;
+            if (m.non_harmonic && m.non_harmonic.length) nhCount += m.non_harmonic.length;
+        });
 
-                html += '<div class="m-chord">' + esc(m.chord || '—') + '</div>';
-                html += '<div class="m-roman">' + esc(m.roman || '') + '</div>';
+        let h = '';
+        for (const [fn, count] of Object.entries(counts)) {
+            if (count === 0) continue;
+            const pct = Math.round(count / total * 100);
+            h += '<div class="stat-card">';
+            h += '<div class="stat-count" style="color:' + colors[fn] + '">' + count + '</div>';
+            h += '<div class="stat-lbl">' + (labels[fn] || fn) + '</div>';
+            h += '<div class="stat-pct">' + pct + '%</div>';
+            h += '<div class="stat-meter"><div class="stat-meter-fill" style="width:' + pct + '%;background:' + colors[fn] + '"></div></div>';
+            h += '</div>';
+        }
+        if (cadenceCount > 0) {
+            h += '<div class="stat-card"><div class="stat-count" style="color:#ffd700">' + cadenceCount + '</div><div class="stat-lbl">Cadències</div></div>';
+        }
+        if (nhCount > 0) {
+            h += '<div class="stat-card"><div class="stat-count" style="color:#fb923c">' + nhCount + '</div><div class="stat-lbl">Notes NH</div></div>';
+        }
+        statsPanel.innerHTML = h;
+    }
 
-                html += '<div class="m-details">';
-                if (m.inversion) html += '<div class="m-detail-row"><strong>Inversió:</strong> ' + esc(m.inversion) + '</div>';
-                if (m.bass) html += '<div class="m-detail-row"><strong>Baix:</strong> ' + esc(m.bass) + '</div>';
-                html += '</div>';
+    function renderFlow(data) {
+        harmonicFlow.innerHTML = '';
+        if (!data.measures || !data.measures.length) return;
 
-                if (m.non_harmonic && m.non_harmonic.length) {
-                    html += '<div class="nh-pills">';
-                    m.non_harmonic.forEach(n => { html += '<span class="nh-pill">' + esc(n) + '</span>'; });
-                    html += '</div>';
+        const modMeasures = new Set();
+        if (data.modulations_summary) {
+            data.modulations_summary.forEach(m => modMeasures.add(m.at_measure));
+        }
+
+        data.measures.forEach((m, i) => {
+            if (m.modulation && modMeasures.has(m.measure)) {
+                const modDiv = document.createElement('div');
+                modDiv.className = 'hf-modulation';
+                modDiv.innerHTML = '<span class="hf-mod-arrow">→</span> ' + esc(m.modulation).substring(0, 20);
+                harmonicFlow.appendChild(modDiv);
+            }
+
+            const fnClass = getFnClass(m.function);
+            const el = document.createElement('div');
+            el.className = 'hf-measure hf-' + fnClass;
+            el.dataset.fn = fnClass;
+            el.dataset.idx = i;
+
+            let html = '<span class="hf-num">' + m.measure + '</span>';
+            html += '<span class="hf-chord">' + esc(m.chord || '—') + '</span>';
+            html += '<span class="hf-roman">' + esc(m.roman || '') + '</span>';
+            if (m.cadence) {
+                html += '<span class="hf-cadence">C</span>';
+            }
+            el.innerHTML = html;
+
+            el.addEventListener('click', () => {
+                $$('.hf-measure').forEach(x => x.classList.remove('active'));
+                el.classList.add('active');
+                const card = measuresGrid.children[i];
+                if (card) {
+                    card.classList.add('highlight');
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => card.classList.remove('highlight'), 2000);
                 }
-
-                if (m.cadence) html += '<div class="cadence-badge">&#9835; ' + esc(m.cadence) + '</div>';
-                if (m.observation) html += '<div class="m-obs">' + esc(m.observation) + '</div>';
-
-                card.innerHTML = html;
-                measuresGrid.appendChild(card);
             });
-        }
 
-        // Pedagogical summary
+            harmonicFlow.appendChild(el);
+        });
+    }
+
+    function renderMeasures(data) {
+        measuresGrid.innerHTML = '';
+        if (!data.measures || !data.measures.length) return;
+
+        data.measures.forEach(m => {
+            const fnClass = getFnClass(m.function);
+            const card = document.createElement('div');
+            card.className = 'm-card ft-' + fnClass;
+            card.dataset.fn = fnClass;
+
+            let html = '<div class="m-card-top">';
+            html += '<span class="m-num">Compàs ' + m.measure + '</span>';
+            html += '<span class="fn-badge fn-' + fnClass + '">' + esc(m.function || '?') + '</span>';
+            html += '</div>';
+            html += '<div class="m-chord">' + esc(m.chord || '—') + '</div>';
+            html += '<div class="m-roman">' + esc(m.roman || '') + '</div>';
+            html += '<div class="m-details">';
+            if (m.inversion) html += '<div class="m-detail-row"><strong>Inversió:</strong> ' + esc(m.inversion) + '</div>';
+            if (m.bass) html += '<div class="m-detail-row"><strong>Baix:</strong> ' + esc(m.bass) + '</div>';
+            html += '</div>';
+            if (m.non_harmonic && m.non_harmonic.length) {
+                html += '<div class="nh-pills">';
+                m.non_harmonic.forEach(n => { html += '<span class="nh-pill">' + esc(n) + '</span>'; });
+                html += '</div>';
+            }
+            if (m.cadence) html += '<div class="cadence-badge">&#9835; ' + esc(m.cadence) + '</div>';
+            if (m.modulation) html += '<div class="modulation-tag" style="margin-top:5px;">&#8594; ' + esc(m.modulation) + '</div>';
+            if (m.observation) html += '<div class="m-obs">' + esc(m.observation) + '</div>';
+
+            card.innerHTML = html;
+            measuresGrid.appendChild(card);
+        });
+    }
+
+    function renderPedagogy(data) {
         if (data.pedagogical_summary) {
-            pedagogy.innerHTML = '<h3>&#128218; Resum pedagògic</h3><p>' + esc(data.pedagogical_summary) + '</p>';
+            const paragraphs = data.pedagogical_summary.split(/\n{2,}|\. (?=[A-ZÀ-Ü])/);
+            let html = '<h3>&#128218; Resum pedagògic</h3>';
+            if (paragraphs.length > 1) {
+                paragraphs.forEach(p => {
+                    const trimmed = p.trim();
+                    if (trimmed) html += '<p>' + esc(trimmed) + '</p>';
+                });
+            } else {
+                html += '<p>' + esc(data.pedagogical_summary) + '</p>';
+            }
+            pedagogy.innerHTML = html;
             pedagogy.style.display = '';
         } else {
             pedagogy.style.display = 'none';
@@ -828,48 +780,76 @@
         return '<div class="summary-item"><div class="summary-label">' + esc(label) + '</div><div class="summary-value">' + esc(value) + '</div></div>';
     }
 
-    // Copy
-    btnCopy.addEventListener('click', () => {
-        if (!analysisData) return;
+    // --- EXPORTS ---
+    function buildTextReport() {
+        if (!analysisData) return '';
         const d = analysisData;
-        let text = 'ANÀLISI HARMÒNICA\n';
-        text += '═══════════════════\n\n';
-        text += 'Tonalitat: ' + (d.key || '—') + '\n';
-        if (d.time_signature) text += 'Compàs: ' + d.time_signature + '\n';
-        if (d.structure) text += 'Estructura: ' + d.structure + '\n';
-        if (d.modulations && d.modulations.length) text += 'Modulacions: ' + d.modulations.join(', ') + '\n';
-        text += '\n';
-
+        let t = 'ANÀLISI HARMÒNICA\n═══════════════════\n\n';
+        t += 'Tonalitat: ' + (d.key || '—') + '\n';
+        if (d.time_signature) t += 'Compàs: ' + d.time_signature + '\n';
+        if (d.structure) t += 'Estructura: ' + d.structure + '\n';
+        if (d.modulations && d.modulations.length) t += 'Modulacions: ' + d.modulations.join(', ') + '\n';
+        t += '\n';
         if (d.measures) {
             d.measures.forEach(m => {
-                text += 'Compàs ' + m.measure + ': ';
-                text += (m.chord || '—') + ' — ' + (m.roman || '') + ' [' + (m.function || '?') + ']';
-                if (m.inversion) text += ' · ' + m.inversion;
-                if (m.bass) text += ' · Baix: ' + m.bass;
-                text += '\n';
-                if (m.non_harmonic && m.non_harmonic.length) text += '  Notes no harm.: ' + m.non_harmonic.join(', ') + '\n';
-                if (m.cadence) text += '  Cadència: ' + m.cadence + '\n';
-                if (m.observation) text += '  → ' + m.observation + '\n';
+                t += 'Compàs ' + m.measure + ': ';
+                t += (m.chord || '—') + ' — ' + (m.roman || '') + ' [' + (m.function || '?') + ']';
+                if (m.inversion) t += ' · ' + m.inversion;
+                if (m.bass) t += ' · Baix: ' + m.bass;
+                t += '\n';
+                if (m.non_harmonic && m.non_harmonic.length) t += '  Notes no harm.: ' + m.non_harmonic.join(', ') + '\n';
+                if (m.cadence) t += '  Cadència: ' + m.cadence + '\n';
+                if (m.observation) t += '  → ' + m.observation + '\n';
             });
         }
-
         if (d.pedagogical_summary) {
-            text += '\nRESUM PEDAGÒGIC\n';
-            text += '───────────────\n';
-            text += d.pedagogical_summary + '\n';
+            t += '\nRESUM PEDAGÒGIC\n───────────────\n' + d.pedagogical_summary + '\n';
         }
+        return t;
+    }
 
+    btnCopy.addEventListener('click', () => {
+        const text = buildTextReport();
+        if (!text) return;
         navigator.clipboard.writeText(text).then(() => {
-            const orig = btnCopy.innerHTML;
+            btnCopy.classList.add('active-feedback');
             btnCopy.innerHTML = '&#10003; Copiat!';
-            setTimeout(() => { btnCopy.innerHTML = orig; }, 1500);
+            setTimeout(() => { btnCopy.classList.remove('active-feedback'); btnCopy.innerHTML = '&#128203; Copiar'; }, 1500);
         });
     });
+
+    btnExportJson.addEventListener('click', () => {
+        if (!analysisData) return;
+        downloadFile(JSON.stringify(analysisData, null, 2), 'analisi-harmonica.json', 'application/json');
+        flash(btnExportJson, '&#10003; Descarregat!', '&#128229; JSON');
+    });
+
+    btnExportTxt.addEventListener('click', () => {
+        const text = buildTextReport();
+        if (!text) return;
+        downloadFile(text, 'analisi-harmonica.txt', 'text/plain');
+        flash(btnExportTxt, '&#10003; Descarregat!', '&#128196; Text');
+    });
+
+    function downloadFile(content, filename, mime) {
+        const blob = new Blob([content], { type: mime + ';charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function flash(btn, msg, orig) {
+        btn.classList.add('active-feedback');
+        btn.innerHTML = msg;
+        setTimeout(() => { btn.classList.remove('active-feedback'); btn.innerHTML = orig; }, 1500);
+    }
 
     // Helpers
     function showLoading() { loadingPanel.classList.add('show'); resetSteps(); }
     function hideLoading() { loadingPanel.classList.remove('show'); }
-
     function setStep(n) {
         for (let i = 1; i <= 3; i++) {
             const el = document.getElementById('step' + i);
@@ -878,16 +858,11 @@
             if (i === n) el.classList.add('active');
         }
     }
-    function resetSteps() {
-        for (let i = 1; i <= 3; i++) {
-            document.getElementById('step' + i).classList.remove('active', 'done');
-        }
-    }
-
+    function resetSteps() { for (let i = 1; i <= 3; i++) document.getElementById('step' + i).classList.remove('active', 'done'); }
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
     function hideError() { errorBox.classList.remove('show'); }
     function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
 })();
 </script>
 </body>
