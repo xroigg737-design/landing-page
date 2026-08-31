@@ -400,6 +400,7 @@
                 <button class="btn-tool" id="btnCopy">&#128203; Copiar</button>
                 <button class="btn-tool" id="btnExportJson">&#128229; JSON</button>
                 <button class="btn-tool" id="btnExportTxt">&#128196; Text</button>
+                <button class="btn-tool" id="btnExportPdf">&#128195; PDF</button>
             </div>
         </div>
 
@@ -419,9 +420,11 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.0
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.1
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 (function(){
     const $ = s => document.querySelector(s);
@@ -448,6 +451,7 @@
     const btnCopy = $('#btnCopy');
     const btnExportJson = $('#btnExportJson');
     const btnExportTxt = $('#btnExportTxt');
+    const btnExportPdf = $('#btnExportPdf');
     const fnLegend = $('#fnLegend');
 
     let selectedFile = null;
@@ -855,6 +859,373 @@
         btn.classList.add('active-feedback');
         btn.innerHTML = msg;
         setTimeout(() => { btn.classList.remove('active-feedback'); btn.innerHTML = orig; }, 1500);
+    }
+
+    // PDF Export
+    btnExportPdf.addEventListener('click', function() {
+        if (!analysisData) return;
+        if (typeof window.jspdf === 'undefined') {
+            showError("No s'ha pogut carregar la llibreria PDF. Refresca la pàgina.");
+            return;
+        }
+        btnExportPdf.innerHTML = '&#9203; Generant...';
+        btnExportPdf.disabled = true;
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+            try {
+                generatePDF();
+                flash(btnExportPdf, '&#10003; Descarregat!', '&#128195; PDF');
+            } catch(e) {
+                console.error('PDF error:', e);
+                showError("Error generant el PDF: " + e.message);
+                btnExportPdf.innerHTML = '&#128195; PDF';
+            }
+            btnExportPdf.disabled = false;
+        }); });
+    });
+
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const d = analysisData;
+        const W = 210, H = 297, ML = 14, MR = 14, CW = W - ML - MR;
+        let y = 0;
+
+        const FC = {
+            T: [34,197,94], S: [59,130,246], D: [249,115,22],
+            DD: [168,85,247], SD: [236,72,153], unknown: [140,140,140]
+        };
+        const FC_LIGHT = {};
+        for (const [k, v] of Object.entries(FC)) {
+            FC_LIGHT[k] = v.map(c => Math.min(255, c + Math.round((255 - c) * 0.82)));
+        }
+        const FN_NAMES = {
+            T: 'Tonica (T)', S: 'Subdominant (S)', D: 'Dominant (D)',
+            DD: 'Doble Dominant (DD)', SD: 'Subdom. Dorica (SD)', unknown: 'Altres'
+        };
+        const FN_DESC = {
+            T: 'Repos, centre tonal',
+            S: 'Tensio moderada, prepara la dominant',
+            D: 'Tensio maxima, demana resolucio',
+            DD: 'Dominant secundaria de V',
+            SD: 'Color modal doric'
+        };
+
+        function needNewPage(need) {
+            if (y + need > H - 18) { doc.addPage(); y = 15; return true; }
+            return false;
+        }
+
+        function sectionTitle(text) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(80, 80, 80);
+            doc.text(text, ML, y);
+            var tw = doc.getTextWidth(text);
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.15);
+            doc.line(ML + tw + 3, y - 1.5, W - MR, y - 1.5);
+            y += 6;
+        }
+
+        // ── HEADER BAND ──
+        doc.setFillColor(15, 12, 41);
+        doc.rect(0, 0, W, 44, 'F');
+        doc.setFillColor(255, 215, 0);
+        doc.rect(0, 42, W, 2, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(24);
+        doc.setTextColor(255, 215, 0);
+        doc.text('ANALISI HARMONICA', W / 2, 17, { align: 'center' });
+
+        doc.setFontSize(11);
+        doc.setTextColor(230, 230, 230);
+        var infoParts = [];
+        if (d.key) infoParts.push(d.key);
+        if (d.time_signature) infoParts.push(d.time_signature);
+        if (d.measures) infoParts.push(d.measures.length + ' compassos');
+        doc.text(infoParts.join('  |  '), W / 2, 28, { align: 'center' });
+
+        if (d.structure) {
+            doc.setFontSize(9);
+            doc.setTextColor(190, 190, 190);
+            doc.text('Estructura: ' + d.structure, W / 2, 36, { align: 'center' });
+        }
+        y = 52;
+
+        // ── MODULACIONS ──
+        if (d.modulations && d.modulations.length) {
+            sectionTitle('MODULACIONS');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            var mx = ML;
+            d.modulations.forEach(function(mod) {
+                var text = String(mod);
+                var tw = doc.getTextWidth(text) + 8;
+                if (mx + tw > W - MR) { mx = ML; y += 7; }
+                doc.setFillColor(245, 235, 255);
+                doc.setDrawColor(180, 140, 230);
+                doc.setLineWidth(0.3);
+                doc.roundedRect(mx, y - 3.5, tw, 6, 1.5, 1.5, 'FD');
+                doc.setTextColor(128, 80, 200);
+                doc.text(text, mx + 4, y);
+                mx += tw + 3;
+            });
+            y += 10;
+        }
+
+        // ── DISTRIBUCIO DE FUNCIONS + LLEGENDA DIDACTICA ──
+        if (d.measures && d.measures.length) {
+            needNewPage(55);
+            sectionTitle('DISTRIBUCIO DE FUNCIONS TONALS');
+
+            var counts = { T:0, S:0, D:0, DD:0, SD:0, unknown:0 };
+            var total = d.measures.length;
+            var cadenceCount = 0, nhCount = 0;
+            d.measures.forEach(function(m) {
+                counts[getFnClass(m.function)]++;
+                if (m.cadence) cadenceCount++;
+                if (m.non_harmonic && m.non_harmonic.length) nhCount += m.non_harmonic.length;
+            });
+
+            var barH = 10, bx = ML;
+            var order = ['T','S','D','DD','SD','unknown'];
+            order.forEach(function(fn) {
+                if (counts[fn] === 0) return;
+                var w = (counts[fn] / total) * CW;
+                var c = FC[fn];
+                doc.setFillColor(c[0], c[1], c[2]);
+                doc.rect(bx, y, w, barH, 'F');
+                if (w > 14) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.5);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text(Math.round(counts[fn]/total*100) + '%', bx + w/2, y + barH/2 + 1, { align: 'center' });
+                }
+                bx += w;
+            });
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.rect(ML, y, CW, barH, 'S');
+            y += barH + 5;
+
+            order.forEach(function(fn) {
+                if (counts[fn] === 0) return;
+                var c = FC[fn];
+                doc.setFillColor(c[0], c[1], c[2]);
+                doc.circle(ML + 2, y - 0.5, 1.5, 'F');
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(7.5);
+                doc.setTextColor(60, 60, 60);
+                var mainText = FN_NAMES[fn] + ': ' + counts[fn];
+                doc.text(mainText, ML + 6, y);
+                if (FN_DESC[fn]) {
+                    doc.setFont('helvetica', 'italic');
+                    doc.setFontSize(6.5);
+                    doc.setTextColor(140, 140, 140);
+                    doc.text(' -- ' + FN_DESC[fn], ML + 6 + doc.getTextWidth(mainText), y);
+                }
+                y += 5;
+            });
+
+            if (cadenceCount > 0 || nhCount > 0) {
+                y += 2;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7);
+                doc.setTextColor(120, 120, 120);
+                var extras = [];
+                if (cadenceCount > 0) extras.push(cadenceCount + ' cadencies detectades');
+                if (nhCount > 0) extras.push(nhCount + ' notes no harmoniques');
+                doc.text(extras.join('  |  '), ML, y);
+            }
+            y += 8;
+        }
+
+        // ── FLUX HARMONIC ──
+        if (d.measures && d.measures.length) {
+            needNewPage(25);
+            sectionTitle('FLUX HARMONIC');
+
+            var boxW = 12, boxH = 15, gap = 1.2;
+            var maxPerRow = Math.floor((CW + gap) / (boxW + gap));
+            var col = 0;
+
+            d.measures.forEach(function(m) {
+                if (col >= maxPerRow) { col = 0; y += boxH + 2; }
+                if (y + boxH > H - 18) { doc.addPage(); y = 15; col = 0; }
+
+                var x = ML + col * (boxW + gap);
+                var fnClass = getFnClass(m.function);
+                var c = FC[fnClass] || FC.unknown;
+                var cl = FC_LIGHT[fnClass] || FC_LIGHT.unknown;
+
+                doc.setFillColor(cl[0], cl[1], cl[2]);
+                doc.setDrawColor(c[0], c[1], c[2]);
+                doc.setLineWidth(0.35);
+                doc.roundedRect(x, y, boxW, boxH, 1.2, 1.2, 'FD');
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(5);
+                doc.setTextColor(160, 160, 160);
+                doc.text(String(m.measure), x + boxW/2, y + 3.5, { align: 'center' });
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(7);
+                doc.setTextColor(c[0], c[1], c[2]);
+                doc.text((m.chord || '?').substring(0, 7), x + boxW/2, y + 8, { align: 'center' });
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(5.5);
+                doc.setTextColor(100, 100, 100);
+                doc.text((m.roman || '').substring(0, 7), x + boxW/2, y + 12, { align: 'center' });
+
+                if (m.cadence) {
+                    doc.setFillColor(255, 215, 0);
+                    doc.circle(x + boxW - 1.5, y + 1.5, 1, 'F');
+                }
+
+                col++;
+            });
+            y += boxH + 10;
+        }
+
+        // ── TAULA COMPAS PER COMPAS ──
+        if (d.measures && d.measures.length) {
+            needNewPage(25);
+            sectionTitle('DETALL COMPAS PER COMPAS');
+
+            var tableBody = d.measures.map(function(m) {
+                return [
+                    String(m.measure),
+                    m.chord || '?',
+                    m.roman || '',
+                    m.function || '?',
+                    m.bass || '',
+                    (m.non_harmonic || []).join(', '),
+                    m.cadence || '',
+                    m.observation || ''
+                ];
+            });
+
+            doc.autoTable({
+                startY: y,
+                margin: { left: ML, right: MR },
+                head: [['#', 'Acord', 'Xifrat roma', 'Funcio', 'Baix', 'Notes no harmoniques', 'Cadencia', 'Observacions']],
+                body: tableBody,
+                theme: 'grid',
+                styles: {
+                    fontSize: 6.5,
+                    cellPadding: 2,
+                    lineColor: [225, 225, 225],
+                    lineWidth: 0.15,
+                    overflow: 'linebreak',
+                    valign: 'middle',
+                },
+                headStyles: {
+                    fillColor: [15, 12, 41],
+                    textColor: [255, 215, 0],
+                    fontStyle: 'bold',
+                    fontSize: 6.5,
+                    cellPadding: 3,
+                },
+                columnStyles: {
+                    0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' },
+                    1: { cellWidth: 17, fontStyle: 'bold' },
+                    2: { cellWidth: 16 },
+                    3: { cellWidth: 12, halign: 'center' },
+                    4: { cellWidth: 11 },
+                    5: { cellWidth: 30 },
+                    6: { cellWidth: 24 },
+                    7: { cellWidth: 'auto', fontStyle: 'italic', textColor: [130, 130, 130] },
+                },
+                didParseCell: function(data) {
+                    if (data.section !== 'body') return;
+                    if (data.column.index === 3) {
+                        var fn = getFnClass(data.cell.raw);
+                        var c = FC[fn], cl = FC_LIGHT[fn];
+                        if (c && cl) {
+                            data.cell.styles.fillColor = [cl[0], cl[1], cl[2]];
+                            data.cell.styles.textColor = [c[0], c[1], c[2]];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                    if (data.column.index === 6 && data.cell.raw) {
+                        data.cell.styles.fillColor = [255, 252, 235];
+                        data.cell.styles.textColor = [180, 140, 0];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                    if (data.row.index % 2 === 0 && data.column.index !== 3 && !(data.column.index === 6 && data.cell.raw)) {
+                        data.cell.styles.fillColor = [250, 250, 254];
+                    }
+                },
+            });
+
+            y = doc.lastAutoTable.finalY + 10;
+        }
+
+        // ── RESUM PEDAGOGIC ──
+        if (d.pedagogical_summary) {
+            needNewPage(25);
+            sectionTitle('RESUM PEDAGOGIC');
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            var maxTextW = CW - 14;
+            var lines = doc.splitTextToSize(d.pedagogical_summary, maxTextW);
+            var lineH = 4, pad = 6;
+
+            var lineIdx = 0;
+            while (lineIdx < lines.length) {
+                var avail = H - 18 - y;
+                if (avail < pad * 2 + lineH * 3) {
+                    doc.addPage();
+                    y = 15;
+                    continue;
+                }
+                var maxLinesOnPage = Math.max(3, Math.floor((avail - pad * 2) / lineH));
+                var chunk = lines.slice(lineIdx, lineIdx + maxLinesOnPage);
+                var bxH = chunk.length * lineH + pad * 2;
+
+                doc.setFillColor(255, 253, 245);
+                doc.setDrawColor(255, 215, 0);
+                doc.setLineWidth(0.5);
+                doc.roundedRect(ML, y, CW, bxH, 2, 2, 'FD');
+
+                doc.setFillColor(255, 215, 0);
+                doc.rect(ML, y + 1, 2.5, bxH - 2, 'F');
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8.5);
+                doc.setTextColor(55, 55, 55);
+                chunk.forEach(function(line, i) {
+                    doc.text(line, ML + 8, y + pad + 2 + i * lineH);
+                });
+
+                lineIdx += chunk.length;
+                y += bxH + 4;
+                if (lineIdx < lines.length) { doc.addPage(); y = 15; }
+            }
+        }
+
+        // ── FOOTER A TOTES LES PAGINES ──
+        var pageCount = doc.getNumberOfPages();
+        var now = new Date();
+        var dateStr = now.getDate() + '/' + (now.getMonth()+1) + '/' + now.getFullYear();
+        for (var p = 1; p <= pageCount; p++) {
+            doc.setPage(p);
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.15);
+            doc.line(ML, H - 14, W - MR, H - 14);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(180, 180, 180);
+            doc.text('Analitzador Harmonic | XRoig | ' + dateStr, ML, H - 9);
+            doc.text(p + ' / ' + pageCount, W - MR, H - 9, { align: 'right' });
+        }
+
+        var filename = 'analisi-harmonica';
+        if (d.key) filename += '-' + d.key.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        doc.save(filename + '.pdf');
     }
 
     // Helpers
