@@ -375,7 +375,7 @@
             <li id="step2">Analitzant harmonia amb IA...</li>
             <li id="step3">Preparant resultats...</li>
         </ul>
-        <p class="loading-hint">L'an&#224;lisi pot trigar 15-40 segons segons la llarg&#224;ria</p>
+        <p class="loading-hint">PDF: fins a 3-4 minuts (m&#224;x 3 p&#224;gines) &middot; MusicXML: 15-40 segons</p>
     </div>
 
     <!-- ERROR -->
@@ -562,11 +562,15 @@
 
             const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
             const API = isLocal ? 'http://localhost:5070' : '/acords';
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 270000);
             const resp = await fetch(API + '/harmonic-analysis', {
                 method: 'POST',
                 body: formData,
                 credentials: 'same-origin',
+                signal: controller.signal,
             });
+            clearTimeout(timeout);
 
             if (!resp.ok) {
                 const errData = await resp.json().catch(() => null);
@@ -583,7 +587,13 @@
             results.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } catch (err) {
             hideLoading();
-            showError(err.message || "Error inesperat durant l'anàlisi");
+            if (err.name === 'AbortError') {
+                showError("L'anàlisi ha trigat massa. Prova amb menys pàgines (ex: 1-2).");
+            } else if (err.message && err.message.includes('504')) {
+                showError("Timeout del servidor. Prova amb menys pàgines o un PDF més petit.");
+            } else {
+                showError(err.message || "Error inesperat durant l'anàlisi");
+            }
         } finally {
             btnAnalyze.disabled = false;
         }
