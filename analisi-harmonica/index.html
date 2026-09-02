@@ -97,18 +97,18 @@
         .notation-toggle button.active { background: rgba(255,215,0,0.15); color: #ffd700; }
         .notation-toggle button:hover:not(.active) { background: rgba(255,255,255,0.08); }
 
-        /* Pages input (for PDF) */
-        .pages-input {
+        /* Range inputs (pages for PDF, measures for MusicXML) */
+        .range-input {
             display: none; align-items: center; gap: 8px;
         }
-        .pages-input.show { display: flex; }
-        .pages-input label { font-size: 0.82em; color: rgba(255,255,255,0.5); }
-        .pages-input input {
+        .range-input.show { display: flex; }
+        .range-input label { font-size: 0.82em; color: rgba(255,255,255,0.5); }
+        .range-input input {
             width: 100px; padding: 7px 12px; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
             color: #fff; font-size: 0.85em;
         }
-        .pages-input input::placeholder { color: rgba(255,255,255,0.25); }
+        .range-input input::placeholder { color: rgba(255,255,255,0.25); }
 
         .btn-analyze {
             padding: 12px 36px; border: none; border-radius: 10px;
@@ -360,9 +360,13 @@
             <button class="active" data-val="latin">Do Re Mi</button>
             <button data-val="anglo">C D E</button>
         </div>
-        <div class="pages-input" id="pagesInput">
+        <div class="range-input" id="pagesInput">
             <label>P&#224;gines:</label>
             <input type="text" id="pagesValue" placeholder="1-3, 5">
+        </div>
+        <div class="range-input" id="measuresInput">
+            <label>Compassos:</label>
+            <input type="text" id="measuresValue" placeholder="1-32">
         </div>
         <button class="btn-analyze" id="btnAnalyze">&#9835; Analitzar</button>
     </div>
@@ -375,7 +379,7 @@
             <li id="step2">Analitzant harmonia amb IA...</li>
             <li id="step3">Preparant resultats...</li>
         </ul>
-        <p class="loading-hint">PDF: fins a 3-4 minuts (m&#224;x 3 p&#224;gines) &middot; MusicXML: 15-40 segons</p>
+        <p class="loading-hint">PDF: fins a 5 minuts (m&#224;x 3 p&#224;gines) &middot; MusicXML: 1-4 minuts segons mida</p>
     </div>
 
     <!-- ERROR -->
@@ -420,7 +424,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.2
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.3
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -439,6 +443,8 @@
     const optionsRow = $('#optionsRow');
     const pagesInput = $('#pagesInput');
     const pagesValue = $('#pagesValue');
+    const measuresInput = $('#measuresInput');
+    const measuresValue = $('#measuresValue');
     const btnAnalyze = $('#btnAnalyze');
     const loadingPanel = $('#loadingPanel');
     const errorBox = $('#errorBox');
@@ -518,6 +524,7 @@
         fileSelected.classList.remove('show');
         optionsRow.classList.remove('show');
         pagesInput.classList.remove('show');
+        measuresInput.classList.remove('show');
         fileInput.value = '';
     });
 
@@ -538,7 +545,10 @@
         fileSize.textContent = formatSize(f.size);
         fileSelected.classList.add('show');
         optionsRow.classList.add('show');
-        pagesInput.classList.toggle('show', ext === 'pdf');
+        const isPdf = ext === 'pdf';
+        const isMxml = ['xml','musicxml','mxl'].includes(ext);
+        pagesInput.classList.toggle('show', isPdf);
+        measuresInput.classList.toggle('show', isMxml);
         hideError();
         results.classList.remove('show');
     }
@@ -559,6 +569,8 @@
         formData.append('notation', notation);
         const pages = pagesValue.value.trim();
         if (pages) formData.append('pages', pages);
+        const measures = measuresValue.value.trim();
+        if (measures) formData.append('measures', measures);
 
         try {
             await delay(400);
@@ -567,7 +579,7 @@
             const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
             const API = isLocal ? 'http://localhost:5070' : '/acords';
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 270000);
+            const timeout = setTimeout(() => controller.abort(), 480000);
             const resp = await fetch(API + '/harmonic-analysis', {
                 method: 'POST',
                 body: formData,
