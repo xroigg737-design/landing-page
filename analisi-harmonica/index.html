@@ -424,7 +424,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.4
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.5
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -490,12 +490,15 @@
     });
 
     function getFnClass(fn) {
-        const u = (fn || '').toUpperCase();
-        if (u === 'T' || u === 'TP') return 'T';
-        if (u === 'S' || u === 'SP') return 'S';
-        if (u === 'D' || u === 'DP') return 'D';
-        if (u === 'DD') return 'DD';
-        if (u === 'SD') return 'SD';
+        // El model pot retornar frases ("D secundària (de Solm)", "T (esdevé D)")
+        // i no només el codi: classifiquem pel primer token alfabètic.
+        const u = (fn || '').toUpperCase().trim();
+        const tok = (u.match(/^[A-Z]+/) || [''])[0];
+        if (tok === 'DD') return 'DD';
+        if (tok === 'SD') return 'SD';
+        if (tok === 'T' || tok === 'TP') return 'T';
+        if (tok === 'S' || tok === 'SP') return 'S';
+        if (tok === 'D' || tok === 'DP') return 'D';
         return 'unknown';
     }
 
@@ -902,6 +905,77 @@
         const W = 210, H = 297, ML = 14, MR = 14, CW = W - ML - MR;
         let y = 0;
 
+        // ── Sanititzar text per jsPDF ────────────────────────────────
+        // Les fonts estàndard (helvetica) només codifiquen WinAnsi. Amb un
+        // caràcter fora del joc (p. ex. la fletxa →) jsPDF passa TOTA la
+        // cadena a UTF-16 i surt esparracada (" M i   m a j o r  !’ ") i
+        // amb l'amplada mal calculada, de manera que queda tallada.
+        // Caràcters de cp1252 fora del rang llatí-1 que jsPDF SÍ que dibuixa bé
+        // (guionet llarg, cometes tipogràfiques, punts suspensius...): es mantenen.
+        const PDF_KEEP = '\u20AC\u201A\u0192\u201E\u2026\u2020\u2021\u02C6\u2030\u0160'
+                       + '\u2039\u0152\u017D\u2018\u2019\u201C\u201D\u2022\u2013\u2014'
+                       + '\u02DC\u2122\u0161\u203A\u0153\u017E\u0178';
+        // La resta es tradueix a un equivalent ASCII, o es descarta.
+        const PDF_MAP = {
+            '\u2192': '->', '\u2190': '<-', '\u2194': '<->', '\u21D2': '=>',
+            '\u21D0': '<=', '\u279C': '->', '\u27A1': '->', '\u2B95': '->',
+            '\u266D': 'b', '\u266E': 'n', '\u266F': '#',
+            '\u201B': "'", '\u2032': "'", '\u2033': '"',
+            '\u2015': '\u2014', '\u2212': '-',
+            '\u2009': ' ', '\u200A': ' ', '\u202F': ' ', '\u2007': ' ', '\u200B': '',
+            '\u2248': '~', '\u2260': '!=', '\u2264': '<=', '\u2265': '>=',
+            '\u2044': '/', '\u02DA': '\u00BA', '\u25E6': 'o', '\u2205': 'o'
+        };
+        function P(v) {
+            var t = String(v == null ? '' : v);
+            return t.replace(/[^\u0000-\u00FF]/g, function(ch) {
+                if (PDF_KEEP.indexOf(ch) >= 0) return ch;
+                return PDF_MAP.hasOwnProperty(ch) ? PDF_MAP[ch] : '';
+            }).replace(/\u00A0/g, ' ');
+        }
+        // Interceptem els punts d'entrada de text del document (autotable
+        // també hi passa) perquè cap cadena arribi a jsPDF sense netejar.
+        (function() {
+            var _text = doc.text.bind(doc);
+            var _split = doc.splitTextToSize.bind(doc);
+            var _width = doc.getTextWidth.bind(doc);
+            doc.text = function(t, x, yy, o) {
+                return _text(Array.isArray(t) ? t.map(P) : P(t), x, yy, o);
+            };
+            doc.splitTextToSize = function(t, w, o) { return _split(P(t), w, o); };
+            doc.getTextWidth = function(t) { return _width(P(t)); };
+            if (typeof doc.getStringUnitWidth === 'function') {
+                var _suw = doc.getStringUnitWidth.bind(doc);
+                doc.getStringUnitWidth = function(t, o) { return _suw(P(t), o); };
+            }
+        })();
+
+        // Etiqueta curta per a les caixes del flux harmònic: treu
+        // alternatives ("Re7 / Fa#º7"), fletxes i parèntesis explicatius,
+        // però manté "V7/ii" i "Do7(b9)".
+        function shortLabel(v) {
+            var raw = String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+            var t = raw
+                .replace(/\s*(?:\u2192|->)[\s\S]*$/, '')
+                .replace(/\s+\/\s+[\s\S]*$/, '')
+                .replace(/\s+\([\s\S]*$/, '')
+                .replace(/\s+(?:de|del|dels|a|al|en|o)\s+[\s\S]*$/i, '')
+                .replace(/[,;]+$/, '')
+                .trim();
+            return t || raw;
+        }
+        // Escriu centrat reduint el cos fins que hi càpiga.
+        function fitText(txt, cx, cy, maxW, baseSize, style) {
+            doc.setFont('helvetica', style || 'normal');
+            var size = baseSize;
+            doc.setFontSize(size);
+            while (size > 3.4 && doc.getTextWidth(txt) > maxW) {
+                size -= 0.25;
+                doc.setFontSize(size);
+            }
+            doc.text(txt, cx, cy, { align: 'center' });
+        }
+
         const FC = {
             T: [34,197,94], S: [59,130,246], D: [249,115,22],
             DD: [168,85,247], SD: [236,72,153], unknown: [140,140,140]
@@ -911,15 +985,15 @@
             FC_LIGHT[k] = v.map(c => Math.min(255, c + Math.round((255 - c) * 0.82)));
         }
         const FN_NAMES = {
-            T: 'Tonica (T)', S: 'Subdominant (S)', D: 'Dominant (D)',
-            DD: 'Doble Dominant (DD)', SD: 'Subdom. Dorica (SD)', unknown: 'Altres'
+            T: 'Tònica (T)', S: 'Subdominant (S)', D: 'Dominant (D)',
+            DD: 'Doble Dominant (DD)', SD: 'Subdom. Dòrica (SD)', unknown: 'Altres'
         };
         const FN_DESC = {
-            T: 'Repos, centre tonal',
-            S: 'Tensio moderada, prepara la dominant',
-            D: 'Tensio maxima, demana resolucio',
-            DD: 'Dominant secundaria de V',
-            SD: 'Color modal doric'
+            T: 'Repòs, centre tonal',
+            S: 'Tensió moderada, prepara la dominant',
+            D: 'Tensió màxima, demana resolució',
+            DD: 'Dominant secundària de V',
+            SD: 'Color modal dòric'
         };
 
         function needNewPage(need) {
@@ -956,7 +1030,7 @@
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(24);
         doc.setTextColor(255, 215, 0);
-        doc.text('ANALISI HARMONICA', W / 2, 16, { align: 'center' });
+        doc.text('ANÀLISI HARMÒNICA', W / 2, 16, { align: 'center' });
 
         doc.setFontSize(11);
         doc.setTextColor(230, 230, 230);
@@ -1004,7 +1078,7 @@
         // ── DISTRIBUCIO DE FUNCIONS + LLEGENDA DIDACTICA ──
         if (d.measures && d.measures.length) {
             needNewPage(55);
-            sectionTitle('DISTRIBUCIO DE FUNCIONS TONALS');
+            sectionTitle('DISTRIBUCIÓ DE FUNCIONS TONALS');
 
             var counts = { T:0, S:0, D:0, DD:0, SD:0, unknown:0 };
             var total = d.measures.length;
@@ -1017,6 +1091,19 @@
 
             var barH = 10, bx = ML;
             var order = ['T','S','D','DD','SD','unknown'];
+
+            // Percentatges arrodonits que sumen exactament 100.
+            var pct = {}, assigned = 0, rests = [];
+            order.forEach(function(fn) {
+                if (counts[fn] === 0) return;
+                var exact = counts[fn] / total * 100;
+                pct[fn] = Math.floor(exact);
+                assigned += pct[fn];
+                rests.push({ fn: fn, rest: exact - Math.floor(exact) });
+            });
+            rests.sort(function(a, b) { return b.rest - a.rest; });
+            for (var ri = 0; ri < 100 - assigned && ri < rests.length; ri++) pct[rests[ri].fn]++;
+
             order.forEach(function(fn) {
                 if (counts[fn] === 0) return;
                 var w = (counts[fn] / total) * CW;
@@ -1027,7 +1114,7 @@
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(7.5);
                     doc.setTextColor(255, 255, 255);
-                    doc.text(Math.round(counts[fn]/total*100) + '%', bx + w/2, y + barH/2 + 1, { align: 'center' });
+                    doc.text(pct[fn] + '%', bx + w/2, y + barH/2 + 1, { align: 'center' });
                 }
                 bx += w;
             });
@@ -1051,7 +1138,7 @@
                     doc.setFont('helvetica', 'italic');
                     doc.setFontSize(7);
                     doc.setTextColor(140, 140, 140);
-                    doc.text(' -- ' + FN_DESC[fn], ML + 8 + mainTextW, y);
+                    doc.text(' \u00B7 ' + FN_DESC[fn], ML + 8 + mainTextW, y);
                 }
                 y += 5;
             });
@@ -1062,8 +1149,8 @@
                 doc.setFontSize(7);
                 doc.setTextColor(120, 120, 120);
                 var extras = [];
-                if (cadenceCount > 0) extras.push(cadenceCount + ' cadencies detectades');
-                if (nhCount > 0) extras.push(nhCount + ' notes no harmoniques');
+                if (cadenceCount > 0) extras.push(cadenceCount + ' cadències detectades');
+                if (nhCount > 0) extras.push(nhCount + ' notes no harmòniques');
                 doc.text(extras.join('  |  '), ML, y);
             }
             y += 8;
@@ -1072,7 +1159,7 @@
         // ── FLUX HARMONIC ──
         if (d.measures && d.measures.length) {
             needNewPage(25);
-            sectionTitle('FLUX HARMONIC');
+            sectionTitle('FLUX HARMÒNIC');
 
             var boxW = 12, boxH = 15, gap = 1.2;
             var maxPerRow = Math.floor((CW + gap) / (boxW + gap));
@@ -1097,15 +1184,11 @@
                 doc.setTextColor(160, 160, 160);
                 doc.text(String(m.measure), x + boxW/2, y + 3.5, { align: 'center' });
 
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(7);
                 doc.setTextColor(c[0], c[1], c[2]);
-                doc.text((m.chord || '?').substring(0, 7), x + boxW/2, y + 8, { align: 'center' });
+                fitText(shortLabel(m.chord) || '?', x + boxW/2, y + 8, boxW - 1.6, 7, 'bold');
 
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(5.5);
                 doc.setTextColor(100, 100, 100);
-                doc.text((m.roman || '').substring(0, 7), x + boxW/2, y + 12, { align: 'center' });
+                fitText(shortLabel(m.roman), x + boxW/2, y + 12, boxW - 1.2, 5.5, 'normal');
 
                 if (m.cadence) {
                     doc.setFillColor(255, 215, 0);
@@ -1120,27 +1203,70 @@
         // ── TAULA COMPAS PER COMPAS ──
         if (d.measures && d.measures.length) {
             needNewPage(25);
-            sectionTitle('DETALL COMPAS PER COMPAS');
+            sectionTitle('DETALL COMPÀS PER COMPÀS');
 
             var tableBody = d.measures.map(function(m) {
+                // Les columnes Acord/Xifrat/Fn són estretes: hi va l'etiqueta
+                // compacta, i el text sencer del model es conserva a Detalls
+                // (així no es parteixen paraules a mitges dins la casella).
+                var extra = [];
+                function narrow(value, label, maxLen) {
+                    var raw = String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+                    if (!raw) return '';
+                    var brief = shortLabel(raw);
+                    if (brief.length > maxLen) brief = brief.slice(0, maxLen).trim();
+                    if (brief !== raw) {
+                        // Si el que s'ha retallat és un parèntesi o una lectura
+                        // alternativa, n'hi ha prou amb aquesta part; si no
+                        // (fletxes, "de Mi major"...), cal el text sencer.
+                        var tail = raw.indexOf(brief) === 0 ? raw.slice(brief.length).trim() : '';
+                        var entry;
+                        if (tail.charAt(0) === '(') {
+                            entry = tail.replace(/^\(/, '').replace(/\)$/, '').trim();
+                        } else if (tail.charAt(0) === '/') {
+                            entry = tail.replace(/^\/+\s*/, '').trim();
+                        } else {
+                            entry = raw;
+                        }
+                        if (entry && !/^[A-Za-z]{1,2}$/.test(entry)) extra.push(label + ': ' + entry);
+                    }
+                    return brief;
+                }
+                var chordCell = narrow(m.chord, 'Acord', 12) || '?';
+                var romanCell = narrow(m.roman, 'Xifrat', 10);
+
+                var fnRaw = String(m.function || '').replace(/\s+/g, ' ').trim();
+                var fnCell;
+                if (!fnRaw) {
+                    fnCell = '?';
+                } else if (fnRaw.length <= 4 && !/[\s(]/.test(fnRaw)) {
+                    fnCell = fnRaw;
+                } else {
+                    var cls = getFnClass(fnRaw);
+                    fnCell = cls === 'unknown' ? (fnRaw.match(/^[A-Za-z]{1,4}/) || ['?'])[0] : cls;
+                    extra.push('Fn: ' + fnRaw);
+                }
+
                 var detalls = [];
                 if (m.bass) detalls.push('Baix: ' + m.bass);
                 if (m.non_harmonic && m.non_harmonic.length) detalls.push('NH: ' + m.non_harmonic.join(', '));
                 if (m.cadence) detalls.push('Cad: ' + m.cadence);
+                detalls = detalls.concat(extra);
+
                 return [
                     String(m.measure),
-                    m.chord || '?',
-                    m.roman || '',
-                    m.function || '?',
-                    detalls.join(' | '),
-                    m.observation || ''
+                    P(chordCell),
+                    P(romanCell),
+                    P(fnCell),
+                    P(detalls.join(' | ')),
+                    P(m.observation || '')
                 ];
             });
 
             doc.autoTable({
                 startY: y,
                 margin: { left: ML, right: MR },
-                head: [['c.', 'Acord', 'Xifrat', 'Fn', 'Detalls', 'Observacions']],
+                head: [['c.', 'Acord', 'Xifrat', 'Fn', 'Detalls', 'Observacions']].map(function(r) { return r.map(P); }),
                 body: tableBody,
                 theme: 'grid',
                 styles: {
@@ -1151,6 +1277,7 @@
                     overflow: 'linebreak',
                     valign: 'middle',
                 },
+                rowPageBreak: 'avoid',
                 headStyles: {
                     fillColor: [15, 12, 41],
                     textColor: [255, 215, 0],
@@ -1160,10 +1287,10 @@
                 },
                 columnStyles: {
                     0: { cellWidth: 8, halign: 'center' },
-                    1: { cellWidth: 18, fontStyle: 'bold' },
-                    2: { cellWidth: 13 },
-                    3: { cellWidth: 9, halign: 'center' },
-                    4: { cellWidth: 45 },
+                    1: { cellWidth: 20, fontStyle: 'bold', fontSize: 7.5 },
+                    2: { cellWidth: 14, fontSize: 7.5 },
+                    3: { cellWidth: 10, halign: 'center' },
+                    4: { cellWidth: 46, fontSize: 7.5 },
                     5: { cellWidth: 'auto' },
                 },
                 didParseCell: function(data) {
@@ -1177,12 +1304,15 @@
                             data.cell.styles.fontStyle = 'bold';
                         }
                     }
-                    if (data.column.index === 4 && data.cell.raw && data.cell.raw.indexOf('Cad:') >= 0) {
-                        data.cell.styles.textColor = [160, 120, 0];
-                        data.cell.styles.fontStyle = 'bold';
-                    }
+                    var rowCells = data.row.raw || [];
+                    var hasCadence = typeof rowCells[4] === 'string' && rowCells[4].indexOf('Cad:') >= 0;
                     if (data.row.index % 2 === 0 && data.column.index !== 3) {
                         data.cell.styles.fillColor = [250, 250, 254];
+                    }
+                    if (hasCadence && data.column.index === 0) {
+                        data.cell.styles.fillColor = [255, 246, 205];
+                        data.cell.styles.textColor = [150, 110, 0];
+                        data.cell.styles.fontStyle = 'bold';
                     }
                 },
             });
@@ -1193,7 +1323,7 @@
         // ── RESUM PEDAGOGIC ──
         if (d.pedagogical_summary) {
             needNewPage(25);
-            sectionTitle('RESUM PEDAGOGIC');
+            sectionTitle('RESUM PEDAGÒGIC');
 
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8.5);
@@ -1237,7 +1367,8 @@
         // ── FOOTER A TOTES LES PAGINES ──
         var pageCount = doc.getNumberOfPages();
         var now = new Date();
-        var dateStr = now.getDate() + '/' + (now.getMonth()+1) + '/' + now.getFullYear();
+        var pad2 = function(n) { return (n < 10 ? '0' : '') + n; };
+        var dateStr = pad2(now.getDate()) + '/' + pad2(now.getMonth()+1) + '/' + now.getFullYear();
         for (var p = 1; p <= pageCount; p++) {
             doc.setPage(p);
             doc.setDrawColor(220, 220, 220);
@@ -1246,12 +1377,20 @@
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6.5);
             doc.setTextColor(180, 180, 180);
-            doc.text('Analitzador Harmonic | XRoig | ' + dateStr, ML, H - 9);
+            doc.text('Analitzador Harmònic | XRoig | ' + dateStr, ML, H - 9);
             doc.text(p + ' / ' + pageCount, W - MR, H - 9, { align: 'right' });
         }
 
         var filename = 'analisi-harmonica';
-        if (d.key) filename += '-' + d.key.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        if (d.key) {
+            // Només la tonalitat, sense la descripció de l'armadura, i sense accents.
+            var slug = String(d.key).split('(')[0]
+                .normalize('NFD').replace(/[\u0300-\u036F]/g, '')
+                .replace(/[^a-zA-Z0-9#]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 40);
+            if (slug) filename += '-' + slug;
+        }
         doc.save(filename + '.pdf');
     }
 

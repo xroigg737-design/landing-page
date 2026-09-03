@@ -15,7 +15,7 @@ rsync -avz \
   "$REMOTE:$REMOTE_DIR"
 
 # Copiar assets (favicon, icones, manifest)
-rsync -avz --exclude='.git' --exclude='deploy.sh' --exclude='README.md' --exclude='index.html' --exclude='VERSION' \
+rsync -avz --exclude='.git' --exclude='deploy.sh' --exclude='README.md' --exclude='/index.html' --exclude='VERSION' \
   -e "ssh -i $SSH_KEY" \
   ./ \
   "$REMOTE:$REMOTE_DIR"
