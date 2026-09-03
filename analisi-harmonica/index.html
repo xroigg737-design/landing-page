@@ -296,6 +296,11 @@
             border: 1px solid rgba(255,215,0,0.15); border-radius: 14px; padding: 20px 24px;
         }
         .pedagogy h3 { font-size: 1em; color: #ffd700; margin-bottom: 10px; }
+        .pedagogy h4.ped-title {
+            font-size: .95em; font-weight: 800; color: #fff; letter-spacing: .2px;
+            margin: 16px 0 5px; padding-left: 9px; border-left: 3px solid #ffd700;
+        }
+        .pedagogy h4.ped-title:first-of-type { margin-top: 4px; }
         .pedagogy p { font-size: 0.92em; color: rgba(255,255,255,0.65); line-height: 1.65; margin-bottom: 10px; }
         .pedagogy p:last-child { margin-bottom: 0; }
 
@@ -425,7 +430,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.6
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.7
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -628,6 +633,56 @@
         }).filter(Boolean);
     }
 
+    // El resum pedagògic arriba com a llista de seccions {title, text}. Els
+    // resultats antics només tenen el text seguit: se'n deduexen els títols.
+    function pedagogySections(data) {
+        var raw = data.pedagogical_sections || data.pedagogy_sections;
+        if (Array.isArray(raw) && raw.length) {
+            return raw.map(function(sec) {
+                if (typeof sec === 'string') return { title: '', paragraphs: splitParagraphs(sec) };
+                return {
+                    title: cleanTitle(sec.title || sec.heading || ''),
+                    paragraphs: splitParagraphs(sec.text || sec.body || sec.content || '')
+                };
+            }).filter(function(s) { return s.title || s.paragraphs.length; });
+        }
+        return parsePedagogyText(data.pedagogical_summary || '');
+    }
+
+    function cleanTitle(t) {
+        return String(t).replace(/\*\*/g, '').replace(/^#{1,4}\s*/, '')
+                        .replace(/^\d+[.)]\s*/, '').replace(/\s*:\s*$/, '').trim();
+    }
+
+    function splitParagraphs(t) {
+        return String(t == null ? '' : t).split(/\n{2,}|\r?\n/)
+            .map(function(x) { return x.replace(/\*\*/g, '').trim(); })
+            .filter(Boolean);
+    }
+
+    function parsePedagogyText(text) {
+        var secs = [], cur = null;
+        String(text || '').split(/\r?\n/).forEach(function(rawLine) {
+            var line = rawLine.trim();
+            if (!line) return;
+            var hash = line.match(/^#{1,4}\s+(.*)$/);
+            var boldOnly = line.match(/^\*\*(.+?)\*\*\s*:?\s*$/);
+            var boldPlus = line.match(/^\*\*(.+?)\*\*\s*:?\s*(.+)$/);
+            var plain = (line.length <= 64 && /^[^.!?]+:$/.test(line)) ? line : null;
+            if (hash || boldOnly || plain) {
+                cur = { title: cleanTitle(hash ? hash[1] : boldOnly ? boldOnly[1] : plain), paragraphs: [] };
+                secs.push(cur);
+            } else if (boldPlus) {
+                cur = { title: cleanTitle(boldPlus[1]), paragraphs: [boldPlus[2].replace(/\*\*/g, '').trim()] };
+                secs.push(cur);
+            } else {
+                if (!cur) { cur = { title: '', paragraphs: [] }; secs.push(cur); }
+                cur.paragraphs.push(line.replace(/\*\*/g, ''));
+            }
+        });
+        return secs.filter(function(s) { return s.title || s.paragraphs.length; });
+    }
+
     function normalizeResponse(data) {
         if (data.modulations_summary && !data.modulations) {
             data.modulations = data.modulations_summary.map(m =>
@@ -802,22 +857,21 @@
     }
 
     function renderPedagogy(data) {
-        if (data.pedagogical_summary) {
-            const paragraphs = data.pedagogical_summary.split(/\n{2,}|\. (?=[A-ZÀ-Ü])/);
-            let html = '<h3>&#128218; Resum pedagògic</h3>';
-            if (paragraphs.length > 1) {
-                paragraphs.forEach(p => {
-                    const trimmed = p.trim();
-                    if (trimmed) html += '<p>' + esc(trimmed) + '</p>';
-                });
-            } else {
-                html += '<p>' + esc(data.pedagogical_summary) + '</p>';
+        const secs = pedagogySections(data);
+        if (!secs.length) { pedagogy.style.display = 'none'; return; }
+
+        let html = '<h3>&#128218; Resum pedagògic</h3>';
+        secs.forEach(sec => {
+            if (sec.title) html += '<h4 class="ped-title">' + esc(sec.title) + '</h4>';
+            let pars = sec.paragraphs;
+            // Un sol paràgraf molt llarg i sense títol: el partim per llegibilitat.
+            if (!sec.title && pars.length === 1 && pars[0].length > 700) {
+                pars = pars[0].split(/\. (?=[A-ZÀ-Ü])/).map((x, i, a) => i < a.length - 1 ? x + '.' : x);
             }
-            pedagogy.innerHTML = html;
-            pedagogy.style.display = '';
-        } else {
-            pedagogy.style.display = 'none';
-        }
+            pars.forEach(par => { if (par.trim()) html += '<p>' + esc(par.trim()) + '</p>'; });
+        });
+        pedagogy.innerHTML = html;
+        pedagogy.style.display = '';
     }
 
     function summaryItem(label, value) {
@@ -847,8 +901,13 @@
                 if (m.observation) t += '  → ' + m.observation + '\n';
             });
         }
-        if (d.pedagogical_summary) {
-            t += '\nRESUM PEDAGÒGIC\n───────────────\n' + d.pedagogical_summary + '\n';
+        const pedSecs = pedagogySections(d);
+        if (pedSecs.length) {
+            t += '\nRESUM PEDAGÒGIC\n═══════════════\n';
+            pedSecs.forEach(sec => {
+                if (sec.title) t += '\n' + sec.title.toUpperCase() + '\n' + '─'.repeat(sec.title.length) + '\n';
+                sec.paragraphs.forEach(par => { t += par + '\n'; });
+            });
         }
         return t;
     }
@@ -1358,46 +1417,89 @@
         }
 
         // ── RESUM PEDAGOGIC ──
-        if (d.pedagogical_summary) {
-            needNewPage(25);
+        var pedSections = pedagogySections(d);
+        if (pedSections.length) {
+            needNewPage(30);
             sectionTitle('RESUM PEDAGÒGIC');
 
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8.5);
-            var maxTextW = CW - 14;
-            var lines = doc.splitTextToSize(d.pedagogical_summary, maxTextW);
-            var lineH = 4, pad = 6;
+            var TITLE_SIZE = 10, BODY_SIZE = 8.5;
+            var TITLE_H = 6.2, BODY_H = 4;
+            var maxTextW = CW - 18, pad = 6, textX = ML + 9;
 
-            var lineIdx = 0;
-            while (lineIdx < lines.length) {
-                var avail = H - 18 - y;
-                if (avail < pad * 2 + lineH * 3) {
-                    doc.addPage();
-                    y = 15;
-                    continue;
+            // Cada línia ja partida esdevé un element amb el seu estil i el seu
+            // espai previ, per poder paginar sense trencar un títol del seu text.
+            var blocks = [];
+            pedSections.forEach(function(sec, si) {
+                if (sec.title) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(TITLE_SIZE);
+                    doc.splitTextToSize(sec.title, maxTextW - 4).forEach(function(line, li) {
+                        blocks.push({ kind: 'title', text: line, h: TITLE_H,
+                                      gap: (si > 0 && li === 0) ? 3.6 : 0 });
+                    });
                 }
-                var maxLinesOnPage = Math.max(3, Math.floor((avail - pad * 2) / lineH));
-                var chunk = lines.slice(lineIdx, lineIdx + maxLinesOnPage);
-                var bxH = chunk.length * lineH + pad * 2;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(BODY_SIZE);
+                sec.paragraphs.forEach(function(par, pi) {
+                    doc.splitTextToSize(par, maxTextW).forEach(function(line, li) {
+                        blocks.push({ kind: 'body', text: line, h: BODY_H,
+                                      gap: (pi > 0 && li === 0) ? 1.8 : 0 });
+                    });
+                });
+            });
 
+            var bi = 0;
+            while (bi < blocks.length) {
+                var avail = H - 18 - y;
+                if (avail < pad * 2 + BODY_H * 4) { doc.addPage(); y = 15; continue; }
+
+                var budget = avail - pad * 2, used = 0, count = 0;
+                while (bi + count < blocks.length) {
+                    var b = blocks[bi + count];
+                    var need = b.h + (count ? b.gap : 0);
+                    if (used + need > budget) break;
+                    used += need;
+                    count++;
+                }
+                // Un títol no es queda mai sol al final d'una pàgina.
+                while (count > 1 && blocks[bi + count - 1].kind === 'title') {
+                    count--;
+                    used -= blocks[bi + count].h + (count ? blocks[bi + count].gap : 0);
+                }
+                if (count === 0) { doc.addPage(); y = 15; continue; }
+
+                var bxH = used + pad * 2;
                 doc.setFillColor(255, 253, 245);
                 doc.setDrawColor(255, 215, 0);
                 doc.setLineWidth(0.5);
                 doc.roundedRect(ML, y, CW, bxH, 2, 2, 'FD');
-
                 doc.setFillColor(255, 215, 0);
                 doc.rect(ML, y + 1, 2.5, bxH - 2, 'F');
 
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(8.5);
-                doc.setTextColor(55, 55, 55);
-                chunk.forEach(function(line, i) {
-                    doc.text(line, ML + 8, y + pad + 2 + i * lineH);
-                });
+                var cur = y + pad;
+                for (var k = 0; k < count; k++) {
+                    var it = blocks[bi + k];
+                    if (k) cur += it.gap;
+                    if (it.kind === 'title') {
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(TITLE_SIZE);
+                        doc.setTextColor(28, 24, 60);
+                        doc.text(it.text, textX, cur + 3.9);
+                        doc.setDrawColor(255, 215, 0);
+                        doc.setLineWidth(0.4);
+                        doc.line(textX, cur + 5.7, textX + doc.getTextWidth(it.text), cur + 5.7);
+                    } else {
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(BODY_SIZE);
+                        doc.setTextColor(55, 55, 55);
+                        doc.text(it.text, textX, cur + 2.9);
+                    }
+                    cur += it.h;
+                }
 
-                lineIdx += chunk.length;
+                bi += count;
                 y += bxH + 4;
-                if (lineIdx < lines.length) { doc.addPage(); y = 15; }
+                if (bi < blocks.length) { doc.addPage(); y = 15; }
             }
         }
 
