@@ -266,6 +266,7 @@
 
         .m-chord { font-size: 1.4em; font-weight: 800; color: #ffd700; line-height: 1.2; }
         .m-roman { font-size: 1.15em; font-weight: 700; color: #fff; margin-top: 2px; }
+        .m-tones { font-size: .82em; font-weight: 600; color: rgba(255,215,0,.72); letter-spacing: .3px; margin-top: 1px; }
         .m-details { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
         .m-detail-row { font-size: 0.8em; color: rgba(255,255,255,0.45); }
         .m-detail-row strong { color: rgba(255,255,255,0.6); }
@@ -424,7 +425,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.5
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.6
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -618,6 +619,15 @@
         }
     }
 
+    // Les notes que formen l'acord poden arribar com a llista o com a text.
+    function toneList(v) {
+        if (!v) return [];
+        var arr = Array.isArray(v) ? v : String(v).split(/[,;\/|]|\s+-\s+|\u2013/);
+        return arr.map(function(n) {
+            return String(n && n.note ? n.note : n).replace(/[()\[\]]/g, '').trim();
+        }).filter(Boolean);
+    }
+
     function normalizeResponse(data) {
         if (data.modulations_summary && !data.modulations) {
             data.modulations = data.modulations_summary.map(m =>
@@ -628,6 +638,7 @@
             data.measures = data.measures.map(m => ({
                 measure: m.measure,
                 chord: m.chord_symbol || m.chord || '',
+                chord_tones: toneList(m.chord_tones || m.chordTones || m.chord_notes),
                 roman: m.roman_numeral || m.roman || '',
                 function: m.tonal_function || m.function || '',
                 inversion: m.inversion || '',
@@ -768,6 +779,10 @@
             html += '</div>';
             html += '<div class="m-chord">' + esc(m.chord || '—') + '</div>';
             html += '<div class="m-roman">' + esc(m.roman || '') + '</div>';
+            if (m.chord_tones && m.chord_tones.length) {
+                html += '<div class="m-tones" title="Notes que formen l\'acord">'
+                     + esc(m.chord_tones.join(' \u00b7 ')) + '</div>';
+            }
             html += '<div class="m-details">';
             if (m.inversion) html += '<div class="m-detail-row"><strong>Inversió:</strong> ' + esc(m.inversion) + '</div>';
             if (m.bass) html += '<div class="m-detail-row"><strong>Baix:</strong> ' + esc(m.bass) + '</div>';
@@ -828,6 +843,7 @@
                 t += '\n';
                 if (m.non_harmonic && m.non_harmonic.length) t += '  Notes no harm.: ' + m.non_harmonic.join(', ') + '\n';
                 if (m.cadence) t += '  Cadència: ' + m.cadence + '\n';
+                if (m.chord_tones && m.chord_tones.length) t += '  Notes: ' + m.chord_tones.join('-') + '\n';
                 if (m.observation) t += '  → ' + m.observation + '\n';
             });
         }
@@ -939,14 +955,27 @@
             var _text = doc.text.bind(doc);
             var _split = doc.splitTextToSize.bind(doc);
             var _width = doc.getTextWidth.bind(doc);
+            // Autotable passa arrays de línies: cal netejar-les element a element,
+            // mai convertir l'array en text (sortirien les comes del join).
             doc.text = function(t, x, yy, o) {
                 return _text(Array.isArray(t) ? t.map(P) : P(t), x, yy, o);
             };
-            doc.splitTextToSize = function(t, w, o) { return _split(P(t), w, o); };
-            doc.getTextWidth = function(t) { return _width(P(t)); };
+            doc.splitTextToSize = function(t, w, o) {
+                if (!Array.isArray(t)) return _split(P(t), w, o);
+                var out = [];
+                t.forEach(function(line) { out = out.concat(_split(P(line), w, o)); });
+                return out;
+            };
+            doc.getTextWidth = function(t) {
+                if (!Array.isArray(t)) return _width(P(t));
+                return t.reduce(function(mx, line) { return Math.max(mx, _width(P(line))); }, 0);
+            };
             if (typeof doc.getStringUnitWidth === 'function') {
                 var _suw = doc.getStringUnitWidth.bind(doc);
-                doc.getStringUnitWidth = function(t, o) { return _suw(P(t), o); };
+                doc.getStringUnitWidth = function(t, o) {
+                    if (!Array.isArray(t)) return _suw(P(t), o);
+                    return t.reduce(function(mx, line) { return Math.max(mx, _suw(P(line), o)); }, 0);
+                };
             }
         })();
 
@@ -1233,6 +1262,14 @@
                     return brief;
                 }
                 var chordCell = narrow(m.chord, 'Acord', 12) || '?';
+                // Notes reals de l'acord, entre parèntesis just sota el xifrat.
+                if (m.chord_tones && m.chord_tones.length) {
+                    var tones = m.chord_tones.join('-');
+                    // Amb separadors amples si és llarg, perquè pugui partir per un espai
+                    // en lloc de tallar-se a mig nom de nota.
+                    if (tones.length > 15) tones = m.chord_tones.join(' - ');
+                    chordCell += '\n(' + tones + ')';
+                }
                 var romanCell = narrow(m.roman, 'Xifrat', 10);
 
                 var fnRaw = String(m.function || '').replace(/\s+/g, ' ').trim();
@@ -1287,10 +1324,10 @@
                 },
                 columnStyles: {
                     0: { cellWidth: 8, halign: 'center' },
-                    1: { cellWidth: 20, fontStyle: 'bold', fontSize: 7.5 },
-                    2: { cellWidth: 14, fontSize: 7.5 },
+                    1: { cellWidth: 27, fontStyle: 'bold', fontSize: 7 },
+                    2: { cellWidth: 13, fontSize: 7.5 },
                     3: { cellWidth: 10, halign: 'center' },
-                    4: { cellWidth: 46, fontSize: 7.5 },
+                    4: { cellWidth: 40, fontSize: 7.5 },
                     5: { cellWidth: 'auto' },
                 },
                 didParseCell: function(data) {
