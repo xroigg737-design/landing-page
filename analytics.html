@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics · Avui Regu?</title>
+<link rel="icon" href="favicon.ico">
+<style>
+:root {
+    /* Superfícies, alineades amb la landing page */
+    --plane:        #131628;
+    --surface:      #1b2138;
+    --surface-2:    #202844;
+    /* Tinta */
+    --ink:          #ffffff;
+    --ink-2:        #c3c2b7;
+    --ink-muted:    #8b93ad;
+    --grid:         rgba(255,255,255,0.07);
+    --baseline:     rgba(255,255,255,0.16);
+    /* Sèries (validades sobre --surface en mode fosc) */
+    --serie-visites:  #3987e5;
+    --serie-servidor: #d95926;
+    /* Estat (van sempre amb icona i etiqueta, mai color sol) */
+    --bo:       #0ca30c;
+    --avis:     #fab219;
+    --critic:   #d03b3b;
+    --accent:   #2dd4bf;
+}
+* { box-sizing: border-box; }
+/* El degradat va amb background-attachment:fixed i només cobreix l'altura de
+   la finestra; sense un color base a html, en pàgines llargues queda blanc. */
+html { background: #131628; }
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 40%, #16213e 100%);
+    background-attachment: fixed;
+    color: var(--ink-2);
+    min-height: 100vh;
+    padding: 0 0 48px;
+}
+a { color: var(--accent); }
+
+header {
+    padding: 26px 20px 18px;
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+}
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+}
+.tornar {
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: var(--ink-muted);
+}
+.tornar:hover { color: var(--accent); }
+#actualitzat { font-size: 0.78rem; color: var(--ink-muted); margin-left: auto; }
+
+main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+/* ---- Filtres: UNA sola fila, sobre tots els gràfics ---- */
+.filtres {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 4px 0 20px;
+}
+.filtres .etiqueta {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-muted);
+    font-weight: 700;
+    margin-right: 2px;
+}
+.filtres button {
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 7px 14px;
+    cursor: pointer;
+}
+.filtres button:hover { border-color: rgba(255,255,255,0.28); }
+.filtres button[aria-pressed="true"] {
+    background: var(--surface-2);
+    color: var(--ink);
+    border-color: var(--accent);
+}
+
+/* ---- Tarjetes ---- */
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.tile {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 15px 16px 14px;
+}
+.tile .cap {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    margin-bottom: 7px;
+}
+/* Sense tabular-nums: en una xifra gran gran fa que els digits ballin */
+.tile .xifra {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -1px;
+}
+.tile .peu { font-size: 0.72rem; color: var(--ink-muted); margin-top: 6px; }
+
+/* ---- Mesurador de quota ---- */
+.quota {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 15px 16px;
+    margin-bottom: 22px;
+}
+.quota-fila { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.quota h2 {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: var(--ink-muted);
+    font-weight: 700;
+}
+.barra {
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+    margin: 9px 0 6px;
+}
+.barra span { display: block; height: 100%; border-radius: 5px; }
+.estat { font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+.quota .detall { font-size: 0.74rem; color: var(--ink-muted); }
+
+/* ---- Gràfics ---- */
+.carta {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 16px 16px 10px;
+    margin-bottom: 16px;
+}
+.carta h2 {
+    margin: 0 0 2px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.carta .sub { font-size: 0.76rem; color: var(--ink-muted); margin-bottom: 12px; }
+.grafic-embolcall { overflow-x: auto; }
+svg { display: block; width: 100%; height: auto; }
+.grid-linia { stroke: var(--grid); stroke-width: 1; }
+.eix { stroke: var(--baseline); stroke-width: 1; }
+.eix-text { fill: var(--ink-muted); font-size: 10px; font-family: inherit; }
+.valor-max { fill: var(--ink); font-size: 10px; font-weight: 700; font-family: inherit; }
+.barra-dada { transition: opacity .12s; }
+.barra-zona:hover + .barra-dada, .barra-dada:hover { opacity: .72; }
+
+/* ---- Tooltip ---- */
+#tip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 40;
+    background: #0c1020;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    color: var(--ink);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity .1s;
+    white-space: nowrap;
+}
+#tip b { font-weight: 800; }
+#tip .t-dia { color: var(--ink-muted); font-size: 0.72rem; display: block; }
+
+/* ---- Taula ---- */
+details.taula {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+details.taula summary {
+    cursor: pointer;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--ink-2);
+}
+table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.8rem; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--ink-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; }
+td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ---- Estats ---- */
+.avis-caixa {
+    background: rgba(250,178,25,0.1);
+    border: 1px solid rgba(250,178,25,0.4);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+.avis-caixa h2 { margin: 0 0 8px; font-size: 1rem; color: var(--avis); }
+.avis-caixa code {
+    background: rgba(0,0,0,0.35);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+.carregant { color: var(--ink-muted); font-size: 0.85rem; padding: 30px 0; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Analytics · Avui Regu?</h1>
+    <a class="tornar" href="/">&larr; Tornar</a>
+    <span id="actualitzat"></span>
+</header>
+
+<main>
+    <div class="filtres">
+        <span class="etiqueta">Període</span>
+        <button data-dies="7">7 dies</button>
+        <button data-dies="30" aria-pressed="true">30 dies</button>
+        <button data-dies="90">90 dies</button>
+    </div>
+
+    <div id="contingut">
+        <p class="carregant">Carregant dades&hellip;</p>
+    </div>
+</main>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function () {
+    'use strict';
+    var API = 'https://cns-wind-api.xroigg737.workers.dev';
+    var LIMIT_PETICIONS = 100000;   // pla gratuït de Cloudflare Workers, per dia
+    var dies = 30;
+    var ultimes = null;   // última resposta, per redibuixar sense tornar a demanar
+
+    var cont = document.getElementById('contingut');
+    var tip = document.getElementById('tip');
+
+    function nf(n) {
+        return (n == null || isNaN(n)) ? '--' : n.toLocaleString('ca-ES');
+    }
+    function diaCurt(iso) {
+        var d = new Date(iso + 'T12:00:00Z');
+        return d.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+    }
+    function diaLlarg(iso) {
+        var d = new Date(iso + 'T12:00:00Z');
+        return d.toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+    function esc(s) {
+        return String(s).replace(/[&<>"]/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+    }
+
+    /* ---------- Gràfic de barres ----------
+       Una sola sèrie per gràfic (mai dos eixos verticals). Extrems de barra
+       arrodonits 4px i ancorats a la línia base, 2px de separació entre
+       barres, graella fina i contínua, i etiqueta directa només al màxim. */
+    // Amplada útil en píxels reals. El SVG es dibuixa a aquesta mida perquè
+    // l'escala sigui 1:1 i els textos surtin nítids; si es dibuixés sempre a
+    // 900 px, en un mòbil el navegador ho encongiria i les etiquetes dels dies
+    // quedarien il·legibles.
+    function ampladaUtil() {
+        var m = document.querySelector('main');
+        var w = (m ? m.clientWidth : 900) - 34;   // menys el padding de la carta
+        return Math.max(320, Math.min(900, w));
+    }
+
+    function barres(dades, camp, color, unitat) {
+        if (!dades || !dades.length) return '<p class="carregant">Sense dades en aquest període.</p>';
+
+        var W = ampladaUtil();
+        var estret = W < 520;
+        var H = estret ? 200 : 230;
+        // MR ample: l'última etiqueta de dia va centrada a l'última barra i
+        // sense marge dret quedava tallada
+        var ML = estret ? 38 : 46, MR = estret ? 30 : 24, MT = 16, MB = 30;
+        var pw = W - ML - MR, ph = H - MT - MB;
+        var max = Math.max.apply(null, dades.map(function (d) { return d[camp] || 0; }));
+        if (max <= 0) max = 1;
+        // Escala arrodonida amunt, per a marques d'eix llegibles
+        var pas = Math.pow(10, Math.floor(Math.log10(max)));
+        var top = Math.ceil(max / pas) * pas;
+        if (top / max > 2) top = Math.ceil(max / (pas / 2)) * (pas / 2);
+
+        var n = dades.length;
+        var ampBanda = pw / n;
+        var GAP = 2;                                    // separació entre barres
+        var ampBarra = Math.max(2, Math.min(38, ampBanda - GAP));
+        var radi = Math.min(4, ampBarra / 2);
+
+        var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Barres per dia">';
+
+        // graella + eix vertical
+        // 2 marques en estret dona valors rodons (0, meitat, màxim);
+        // amb 3 sortien xifres com 67 i 133
+        var marques = estret ? 2 : 4;
+        for (var i = 0; i <= marques; i++) {
+            var v = top * i / marques;
+            var y = MT + ph - (v / top) * ph;
+            s += '<line class="grid-linia" x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '"/>';
+            s += '<text class="eix-text" x="' + (ML - 8) + '" y="' + (y + 3.5) + '" text-anchor="end">' + nf(Math.round(v)) + '</text>';
+        }
+        s += '<line class="eix" x1="' + ML + '" y1="' + (MT + ph) + '" x2="' + (W - MR) + '" y2="' + (MT + ph) + '"/>';
+
+        // quantes etiquetes de dia caben sense xocar (unes 58 px per etiqueta)
+        var cada = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(pw / 58))));
+
+        dades.forEach(function (d, k) {
+            var val = d[camp] || 0;
+            var h = (val / top) * ph;
+            var x = ML + k * ampBanda + (ampBanda - ampBarra) / 2;
+            var y = MT + ph - h;
+            if (h > 0) {
+                var r = Math.min(radi, h);
+                s += '<path class="barra-dada" fill="' + color + '" d="' +
+                     'M' + x + ' ' + (MT + ph) +
+                     ' L' + x + ' ' + (y + r) +
+                     ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y +
+                     ' L' + (x + ampBarra - r) + ' ' + y +
+                     ' Q' + (x + ampBarra) + ' ' + y + ' ' + (x + ampBarra) + ' ' + (y + r) +
+                     ' L' + (x + ampBarra) + ' ' + (MT + ph) + ' Z"/>';
+            }
+            // zona de contacte generosa per al ratolí, més ampla que la barra
+            s += '<rect class="barra-zona" x="' + (ML + k * ampBanda) + '" y="' + MT +
+                 '" width="' + ampBanda + '" height="' + ph + '" fill="transparent"' +
+                 ' data-dia="' + d.data + '" data-val="' + val + '" data-un="' + unitat + '"/>';
+            // etiqueta directa només al màxim
+            if (val === max && val > 0) {
+                s += '<text class="valor-max" x="' + (x + ampBarra / 2) + '" y="' + (y - 5) +
+                     '" text-anchor="middle">' + nf(val) + '</text>';
+            }
+            if (k % cada === 0 || k === n - 1) {
+                s += '<text class="eix-text" x="' + (x + ampBarra / 2) + '" y="' + (MT + ph + 15) +
+                     '" text-anchor="middle">' + esc(diaCurt(d.data)) + '</text>';
+            }
+        });
+
+        s += '</svg>';
+        return s;
+    }
+
+    /* ---------- Mesurador de quota ---------- */
+    function mesurador(usat, limit) {
+        var pct = limit ? (usat / limit) * 100 : 0;
+        var color, icona, text;
+        if (pct < 50) { color = 'var(--bo)'; icona = '&#10003;'; text = 'Molt per sota del límit'; }
+        else if (pct < 80) { color = 'var(--avis)'; icona = '&#9650;'; text = 'Consum notable'; }
+        else { color = 'var(--critic)'; icona = '&#9888;'; text = 'A prop del límit diari'; }
+        return '<div class="quota">' +
+            '<h2>Quota del servidor · avui</h2>' +
+            '<div class="quota-fila">' +
+              '<span class="estat" style="color:' + color + '">' + icona + ' ' + text + '</span>' +
+            '</div>' +
+            '<div class="barra"><span style="width:' + Math.min(100, pct).toFixed(1) + '%;background:' + color + '"></span></div>' +
+            '<div class="detall">' + nf(usat) + ' de ' + nf(limit) + ' peticions (' + pct.toFixed(1) + '%). ' +
+            'Es reinicia cada dia a mitjanit UTC.</div>' +
+            '</div>';
+    }
+
+    function taula(web, worker) {
+        var per = {};
+        (web || []).forEach(function (d) { per[d.data] = per[d.data] || {}; per[d.data].v = d.visites; per[d.data].p = d.pagines; });
+        (worker || []).forEach(function (d) { per[d.data] = per[d.data] || {}; per[d.data].r = d.peticions; per[d.data].e = d.errors; });
+        var files = Object.keys(per).sort().reverse();
+        var h = '<details class="taula"><summary>Veure les dades en taula</summary>' +
+                '<table><thead><tr><th>Dia</th><th>Visites</th><th>Pàgines</th>' +
+                '<th>Peticions servidor</th><th>Errors</th></tr></thead><tbody>';
+        files.forEach(function (f) {
+            var r = per[f];
+            h += '<tr><td>' + esc(diaCurt(f)) + '</td><td>' + nf(r.v) + '</td><td>' + nf(r.p) +
+                 '</td><td>' + nf(r.r) + '</td><td>' + nf(r.e) + '</td></tr>';
+        });
+        return h + '</tbody></table></details>';
+    }
+
+    function pinta(d) {
+        // Falta el token: instruccions, no un error sec
+        if (d && d.error === 'no_token') {
+            cont.innerHTML = '<div class="avis-caixa"><h2>&#9888; Falta configurar el token</h2>' +
+                '<p>El panell està llest, però encara no pot llegir les dades. Cal crear un token ' +
+                'de només lectura a Cloudflare i configurar-lo al servidor:</p>' +
+                '<p><b>1.</b> A Cloudflare: <i>My Profile → API Tokens → Create Token → Custom token</i>, ' +
+                'amb els permisos <code>Account · Account Analytics · Read</code> i ' +
+                '<code>Account · Workers Scripts · Read</code>.<br>' +
+                '<b>2.</b> Configurar-lo: <code>npx wrangler secret put CF_ANALYTICS_TOKEN</code></p></div>';
+            return;
+        }
+
+        var web = (d && d.web) || [];
+        var wk = (d && d.worker) || [];
+        var avui = new Date().toISOString().substring(0, 10);
+        var webAvui = web.filter(function (x) { return x.data === avui; })[0] || {};
+        var wkAvui = wk.filter(function (x) { return x.data === avui; })[0] || {};
+        var totalVis = web.reduce(function (a, x) { return a + (x.visites || 0); }, 0);
+        var mitjana = web.length ? Math.round(totalVis / web.length) : 0;
+        var maxVis = web.length ? Math.max.apply(null, web.map(function (x) { return x.visites || 0; })) : 0;
+
+        var h = '';
+
+        h += '<div class="tiles">' +
+            '<div class="tile"><div class="cap">Visites avui</div><div class="xifra">' + nf(webAvui.visites || 0) + '</div>' +
+              '<div class="peu">' + nf(webAvui.pagines || 0) + ' pàgines vistes</div></div>' +
+            '<div class="tile"><div class="cap">Visites, ' + dies + ' dies</div><div class="xifra">' + nf(totalVis) + '</div>' +
+              '<div class="peu">' + nf(mitjana) + ' de mitjana al dia</div></div>' +
+            '<div class="tile"><div class="cap">Millor dia</div><div class="xifra">' + nf(maxVis) + '</div>' +
+              '<div class="peu">visites en un sol dia</div></div>' +
+            '<div class="tile"><div class="cap">Peticions al servidor avui</div><div class="xifra">' + nf(wkAvui.peticions || 0) + '</div>' +
+              '<div class="peu">' + nf(wkAvui.errors || 0) + ' errors</div></div>' +
+            '</div>';
+
+        h += mesurador(wkAvui.peticions || 0, LIMIT_PETICIONS);
+
+        if (d.errors && d.errors.web) {
+            h += '<div class="avis-caixa"><h2>&#9888; Les visites no s\'han pogut llegir</h2><p>' +
+                 esc(d.errors.web) + '</p></div>';
+        } else {
+            h += '<div class="carta"><h2>Visites per dia</h2>' +
+                 '<div class="sub">Quanta gent ha obert l\'app. Font: Cloudflare Web Analytics.</div>' +
+                 '<div class="grafic-embolcall">' + barres(web, 'visites', 'var(--serie-visites)', 'visites') + '</div></div>';
+        }
+
+        if (d.errors && d.errors.worker) {
+            h += '<div class="avis-caixa"><h2>&#9888; Les peticions del servidor no s\'han pogut llegir</h2><p>' +
+                 esc(d.errors.worker) + '</p></div>';
+        } else {
+            h += '<div class="carta"><h2>Peticions al servidor per dia</h2>' +
+                 '<div class="sub">El que compta per als límits. Cada visita en fa 8 de cop i 4,4 per minut.</div>' +
+                 '<div class="grafic-embolcall">' + barres(wk, 'peticions', 'var(--serie-servidor)', 'peticions') + '</div></div>';
+        }
+
+        h += taula(web, wk);
+        cont.innerHTML = h;
+    }
+
+    /* ---------- Tooltip per barra ---------- */
+    document.addEventListener('mouseover', function (e) {
+        var z = e.target.closest ? e.target.closest('.barra-zona') : null;
+        if (!z) return;
+        tip.innerHTML = '<span class="t-dia">' + esc(diaLlarg(z.dataset.dia)) + '</span><b>' +
+                        nf(+z.dataset.val) + '</b> ' + esc(z.dataset.un);
+        tip.style.opacity = '1';
+    });
+    document.addEventListener('mousemove', function (e) {
+        if (tip.style.opacity !== '1') return;
+        var x = e.clientX + 14, y = e.clientY - 14;
+        var r = tip.getBoundingClientRect();
+        if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - 14;
+        if (y < 8) y = 8;
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+    });
+    document.addEventListener('mouseout', function (e) {
+        if (e.target.closest && e.target.closest('.barra-zona')) tip.style.opacity = '0';
+    });
+
+    /* ---------- Càrrega ---------- */
+    function carrega() {
+        // Sense pampallugues: es manté el que hi ha mentre arriba el nou
+        fetch(API + '/analytics?dies=' + dies)
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                ultimes = d;
+                pinta(d);
+                document.getElementById('actualitzat').textContent =
+                    'Actualitzat a les ' + new Date().toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+            })
+            .catch(function (err) {
+                cont.innerHTML = '<div class="avis-caixa"><h2>&#9888; No s\'ha pogut connectar</h2><p>' +
+                                 esc(err.message) + '</p></div>';
+            });
+    }
+
+    document.querySelectorAll('.filtres button').forEach(function (b) {
+        b.addEventListener('click', function () {
+            document.querySelectorAll('.filtres button').forEach(function (o) {
+                o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+            });
+            dies = +b.dataset.dies;
+            carrega();
+        });
+    });
+
+    carrega();
+    setInterval(function () { if (!document.hidden) carrega(); }, 5 * 60 * 1000);
+
+    // Redibuixar en canviar la mida (l'amplada del SVG depèn del contenidor)
+    var tRedibuix;
+    var ampPrevia = ampladaUtil();
+    window.addEventListener('resize', function () {
+        clearTimeout(tRedibuix);
+        tRedibuix = setTimeout(function () {
+            if (Math.abs(ampladaUtil() - ampPrevia) < 20) return;
+            ampPrevia = ampladaUtil();
+            if (ultimes) pinta(ultimes);
+        }, 200);
+    });
+})();
+</script>
+</body>
+</html>
