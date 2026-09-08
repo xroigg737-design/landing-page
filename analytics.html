@@ -241,6 +241,20 @@ td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
     font-size: 0.85em;
 }
 .carregant { color: var(--ink-muted); font-size: 0.85rem; padding: 30px 0; text-align: center; }
+.nota {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+    background: rgba(250,178,25,0.08);
+    border: 1px solid rgba(250,178,25,0.28);
+    border-radius: 10px;
+    padding: 10px 13px;
+    margin-bottom: 12px;
+}
+.nota-ok {
+    background: rgba(12,163,12,0.08);
+    border-color: rgba(12,163,12,0.3);
+}
 </style>
 </head>
 <body>
@@ -406,7 +420,7 @@ td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
         (worker || []).forEach(function (d) { per[d.data] = per[d.data] || {}; per[d.data].r = d.peticions; per[d.data].e = d.errors; });
         var files = Object.keys(per).sort().reverse();
         var h = '<details class="taula"><summary>Veure les dades en taula</summary>' +
-                '<table><thead><tr><th>Dia</th><th>Visites</th><th>Pàgines</th>' +
+                '<table><thead><tr><th>Dia</th><th>Obertures</th><th>Càrregues</th>' +
                 '<th>Peticions servidor</th><th>Errors</th></tr></thead><tbody>';
         files.forEach(function (f) {
             var r = per[f];
@@ -440,13 +454,25 @@ td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
         var h = '';
 
+        // Avís d'exactitud: a 30/90 dies Cloudflare serveix xifres mostrejades
+        var m = d.mostreig || 1;
+        if (m > 1) {
+            h += '<div class="nota">&#8776; <b>Xifres estimades.</b> En aquest període ' +
+                 'Cloudflare compta 1 de cada ' + m.toFixed(0) + ' càrregues i multiplica; ' +
+                 'per això els valors diaris surten rodons. Per a xifres exactes, ' +
+                 'fes servir <b>7 dies</b>.</div>';
+        } else {
+            h += '<div class="nota nota-ok">&#10003; <b>Xifres exactes</b> ' +
+                 '(sense mostreig en aquest període).</div>';
+        }
+
         h += '<div class="tiles">' +
-            '<div class="tile"><div class="cap">Visites avui</div><div class="xifra">' + nf(webAvui.visites || 0) + '</div>' +
-              '<div class="peu">' + nf(webAvui.pagines || 0) + ' pàgines vistes</div></div>' +
-            '<div class="tile"><div class="cap">Visites, ' + dies + ' dies</div><div class="xifra">' + nf(totalVis) + '</div>' +
+            '<div class="tile"><div class="cap">Obertures avui</div><div class="xifra">' + nf(webAvui.visites || 0) + '</div>' +
+              '<div class="peu">' + nf(webAvui.pagines || 0) + ' càrregues de pàgina</div></div>' +
+            '<div class="tile"><div class="cap">Obertures, ' + dies + ' dies</div><div class="xifra">' + nf(totalVis) + '</div>' +
               '<div class="peu">' + nf(mitjana) + ' de mitjana al dia</div></div>' +
             '<div class="tile"><div class="cap">Millor dia</div><div class="xifra">' + nf(maxVis) + '</div>' +
-              '<div class="peu">visites en un sol dia</div></div>' +
+              '<div class="peu">obertures en un sol dia</div></div>' +
             '<div class="tile"><div class="cap">Peticions al servidor avui</div><div class="xifra">' + nf(wkAvui.peticions || 0) + '</div>' +
               '<div class="peu">' + nf(wkAvui.errors || 0) + ' errors</div></div>' +
             '</div>';
@@ -457,8 +483,10 @@ td { color: var(--ink-2); font-variant-numeric: tabular-nums; }
             h += '<div class="avis-caixa"><h2>&#9888; Les visites no s\'han pogut llegir</h2><p>' +
                  esc(d.errors.web) + '</p></div>';
         } else {
-            h += '<div class="carta"><h2>Visites per dia</h2>' +
-                 '<div class="sub">Quanta gent ha obert l\'app. Font: Cloudflare Web Analytics.</div>' +
+            h += '<div class="carta"><h2>Obertures per dia</h2>' +
+                 '<div class="sub">Vegades que s\'ha obert l\'app, no persones diferents: ' +
+                 'qui la mira tres vegades compta tres. Sense cookies ni IP, ' +
+                 'no es pot saber quants usuaris únics són.</div>' +
                  '<div class="grafic-embolcall">' + barres(web, 'visites', 'var(--serie-visites)', 'visites') + '</div></div>';
         }
 
