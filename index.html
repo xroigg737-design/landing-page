@@ -79,6 +79,7 @@
         .cat-monitor .category-title { color: #2dd4bf; }
         .cat-sailing .category-title { color: #4fc3f7; }
         .cat-cuina .category-title { color: #e8863a; }
+        .cat-vivenda .category-title { color: #b388ff; }
 
         .category-line {
             flex: 1;
@@ -213,6 +214,13 @@
         .cat-cuina .app-btn:hover {
             background: linear-gradient(180deg, #e8863a 0%, #c06828 100%);
             box-shadow: 0 4px 18px rgba(232,134,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cat-vivenda .app-btn {
+            background: linear-gradient(180deg, #7c4dff 0%, #5e35b1 100%);
+        }
+        .cat-vivenda .app-btn:hover {
+            background: linear-gradient(180deg, #9575cd 0%, #7c4dff 100%);
+            box-shadow: 0 4px 18px rgba(124,77,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
         }
         .cat-music {
             grid-column: 1 / -1;
@@ -578,9 +586,6 @@
                 <span class="category-line"></span>
             </div>
             <div class="apps">
-                <a class="app-btn" href="rituals-palau/api/log.php?dashboard">
-                    <span class="ico">&#128202;</span> Rituals Palau
-                </a>
                 <a class="app-btn" href="analytics.html">
                     <span class="ico">&#128202;</span> Analytics Avui Regu
                 </a>
@@ -631,6 +636,20 @@
         </div>
     </div>
 
+    <div class="category cat-vivenda">
+        <div class="category-body">
+            <div class="category-header">
+                <span class="category-title">Vivenda</span>
+                <span class="category-line"></span>
+            </div>
+            <div class="apps">
+                <a class="app-btn" href="/cerca-vivenda/index.html">
+                    <span class="ico">&#127968;</span> Cerca Vivenda BCN
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="category cat-manual">
         <div class="category-body">
             <div class="category-header">
@@ -667,7 +686,7 @@
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v2.5</p>
+    <p class="footer-version">v2.7</p>
 </footer>
 
 <script>
