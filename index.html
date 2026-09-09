@@ -69,36 +69,36 @@
         }
 
         header {
-            text-align: center;
-            padding: 48px 20px 12px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 32px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
             position: relative;
             z-index: 1;
         }
         header h1 {
-            font-size: 2.4rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
             background: linear-gradient(135deg, #ffd700 0%, #ffaa00 40%, #ff8c00 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 30px rgba(255,170,0,0.25));
-        }
-        header p {
-            color: var(--text-secondary);
-            font-size: 0.82rem;
-            margin-top: 8px;
-            font-weight: 500;
-            letter-spacing: 3px;
-            text-transform: uppercase;
+            filter: drop-shadow(0 0 20px rgba(255,170,0,0.25));
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
-        /* Search */
+        /* Search — now inside header flex */
         .search-bar {
-            max-width: 420px;
-            margin: 20px auto 8px;
+            max-width: 360px;
+            flex: 1;
             position: relative;
             z-index: 1;
+            margin-left: auto;
         }
         .search-bar .search-icon {
             position: absolute;
@@ -155,13 +155,13 @@
 
         /* Bento Grid */
         .bento {
-            max-width: 1200px;
+            max-width: 1600px;
             width: 100%;
             margin: 0 auto;
-            padding: 20px 24px 48px;
+            padding: 16px 32px 40px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
+            gap: 14px;
             position: relative;
             z-index: 1;
         }
@@ -173,8 +173,8 @@
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
             border-top: 2px solid var(--card-accent, var(--glass-border));
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 18px 20px;
             position: relative;
             overflow: hidden;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -234,7 +234,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
         .card-icon {
             width: 36px;
@@ -277,14 +277,14 @@
         .music-groups {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 12px;
         }
         .music-sub {
             background: rgba(255,255,255,0.025);
             border: 1px solid rgba(255,255,255,0.06);
             border-top: 2px solid rgba(255,170,0,0.25);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 10px;
+            padding: 12px 14px;
             transition: border-color 0.3s, background 0.3s;
         }
         .music-sub:hover {
@@ -295,7 +295,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .sub-icon { font-size: 1rem; }
         .sub-title {
@@ -321,9 +321,9 @@
         .app-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border-radius: 10px;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.07);
             border-left: 3px solid var(--btn-hover-border, rgba(255,255,255,0.12));
             background: rgba(255,255,255,0.02);
@@ -390,8 +390,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 14px 16px;
-            border-radius: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.06);
             border-left: 3px solid var(--qa-accent, rgba(255,255,255,0.1));
             background: rgba(255,255,255,0.02);
@@ -628,15 +628,15 @@
 
         /* Mobile */
         @media (max-width: 700px) {
-            header { padding: 32px 16px 8px; }
-            header h1 { font-size: 1.6rem; }
-            .search-bar { margin: 16px 16px 4px; max-width: none; }
+            header { padding: 16px; flex-wrap: wrap; gap: 10px; }
+            header h1 { font-size: 1.4rem; }
+            .search-bar { max-width: none; flex-basis: 100%; margin-left: 0; }
             .bento {
                 padding: 16px 16px 32px;
                 grid-template-columns: 1fr;
             }
             .span-4, .span-3, .span-2 { grid-column: span 1; }
-            .card { padding: 18px; }
+            .card { padding: 14px; }
             .music-groups { grid-template-columns: 1fr; }
             .music-groups .music-sub:last-child { grid-column: span 1; }
             .music-sub-toggle {
@@ -670,14 +670,12 @@
 
 <header>
     <h1>Apps XRoig</h1>
-    <p>Personal app launcher</p>
+    <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" id="appSearch" placeholder="Cercar app..." autocomplete="off" />
+        <kbd>/</kbd>
+    </div>
 </header>
-
-<div class="search-bar">
-    <span class="search-icon">&#128269;</span>
-    <input type="text" id="appSearch" placeholder="Cercar app..." autocomplete="off" />
-    <kbd>/</kbd>
-</div>
 
 <div class="bento">
 
@@ -914,7 +912,7 @@
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v3.2</p>
+    <p class="footer-version">v3.3</p>
 </footer>
 
 <script>
