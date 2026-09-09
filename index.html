@@ -4,295 +4,456 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apps XRoig</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-deep: #0f0c29;
+            --bg-mid: #1a1a2e;
+            --bg-top: #16213e;
+            --glass: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --glass-hover: rgba(255,255,255,0.07);
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a8c0;
+            --text-muted: #606880;
+            --accent-music: #ffaa00;
+            --accent-ai: #7aafff;
+            --accent-tools: #c8a0ff;
+            --accent-monitor: #2dd4bf;
+            --accent-sailing: #4fc3f7;
+            --accent-cuina: #e8863a;
+            --accent-vivenda: #b388ff;
+            --accent-manual: #ff8a65;
+            --accent-games: #66cc66;
+            --gold: #ffaa00;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 40%, #16213e 100%);
-            color: #e8e8e8;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 40%, var(--bg-top) 100%);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(255,170,0,0.035) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(79,195,247,0.025) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(200,160,255,0.02) 0%, transparent 50%);
+            animation: aurora 20s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes aurora {
+            0%   { opacity: 1; transform: scale(1); }
+            50%  { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body::before { animation: none; }
+            .card { animation: none !important; }
+            .app-link, .quick-link { transition: none !important; }
         }
 
         header {
             text-align: center;
-            padding: 40px 20px 28px;
+            padding: 48px 20px 12px;
+            position: relative;
+            z-index: 1;
         }
         header h1 {
-            font-size: 2.2em;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
             background: linear-gradient(90deg, #ffd700, #ffaa00, #ff8c00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            font-weight: 400;
+        }
 
-        .content {
+        /* Search */
+        .search-bar {
+            max-width: 420px;
+            margin: 20px auto 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .search-bar .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px 48px 12px 42px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font: 400 0.9rem/1 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+        }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        .search-bar input:focus {
+            border-color: rgba(255,170,0,0.3);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 24px rgba(255,170,0,0.08);
+        }
+        .search-bar kbd {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 2px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color: var(--text-muted);
+            font: 600 0.7rem/1.4 'Inter', monospace;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .search-bar input:focus ~ kbd { opacity: 0; }
+        .search-no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            grid-column: 1 / -1;
+        }
+        .search-no-results.visible { display: block; }
+
+        /* Bento Grid */
+        .bento {
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            padding: 0 24px 48px;
+            padding: 20px 24px 48px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Category frame */
-        .category {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 14px;
+        /* Card */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
             overflow: hidden;
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
-        .category-banner {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            display: block;
-            filter: brightness(0.7);
-            transition: filter 0.3s;
+        .card:hover {
+            background: var(--glass-hover);
+            border-color: rgba(255,255,255,0.12);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        .category:hover .category-banner {
-            filter: brightness(0.85);
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--card-accent, rgba(255,255,255,0.1)) 0%, transparent 70%);
+            opacity: 0.1;
+            pointer-events: none;
+            transition: opacity 0.4s;
         }
-        .category-body {
-            padding: 14px 20px 18px;
+        .card:hover::before { opacity: 0.18; }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .category-header {
+        .card:nth-child(1) { animation-delay: 0ms; }
+        .card:nth-child(2) { animation-delay: 80ms; }
+        .card:nth-child(3) { animation-delay: 120ms; }
+        .card:nth-child(4) { animation-delay: 160ms; }
+        .card:nth-child(5) { animation-delay: 200ms; }
+        .card:nth-child(6) { animation-delay: 240ms; }
+
+        .card[hidden] { display: none !important; }
+
+        /* Card header */
+        .card-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 18px;
         }
-        .category-title {
-            font-size: 0.85em;
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .card-emoji {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .card-title {
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 2px;
             font-weight: 700;
+            color: var(--card-accent, var(--text-secondary));
         }
-        .cat-music .category-title { color: #ffaa00; }
-        .cat-ai .category-title    { color: #7aafff; }
-        .cat-tool .category-title  { color: #c8a0ff; }
-        .cat-manual .category-title { color: #ff8a65; }
-        .cat-game .category-title  { color: #66cc66; }
-        .cat-monitor .category-title { color: #2dd4bf; }
-        .cat-sailing .category-title { color: #4fc3f7; }
-        .cat-cuina .category-title { color: #e8863a; }
-        .cat-vivenda .category-title { color: #b388ff; }
-
-        .category-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(255,255,255,0.08);
-        }
-
-        /* Remove old icon style */
-
-        /* App buttons */
-        .apps {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        /* Sub-groups within a category */
-        .sub-group {
-            width: 100%;
-            margin-bottom: 14px;
-        }
-        .sub-group:last-child {
-            margin-bottom: 0;
-        }
-        .sub-group-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .sub-group-icon {
-            font-size: 0.9em;
-            opacity: 0.7;
-        }
-        .sub-group-title {
-            font-size: 0.72em;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-            opacity: 0.55;
-            color: inherit;
-        }
-        .sub-group-line {
+        .card-line {
             flex: 1;
             height: 1px;
             background: rgba(255,255,255,0.06);
         }
-        .sub-group .apps {
-            padding-left: 4px;
-        }
-        .app-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 22px;
-            border-radius: 10px;
-            border: none;
-            color: #fff;
-            text-decoration: none;
-            font-size: 0.88em;
-            font-weight: 600;
-            transition: all 0.2s;
-            white-space: nowrap;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
-        }
-        .app-btn:hover {
-            transform: translateY(-2px);
-            text-decoration: none;
-        }
-        .app-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 4px rgba(0,0,0,0.2);
-        }
-        .app-btn .ico {
-            font-size: 1.15em;
-        }
 
-        /* Category-specific button styles */
-        .cat-music .app-btn {
-            background: linear-gradient(180deg, #d4920a 0%, #a06800 100%);
-        }
-        .cat-music .app-btn:hover {
-            background: linear-gradient(180deg, #e8a420 0%, #b87800 100%);
-            box-shadow: 0 4px 18px rgba(255,170,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-ai .app-btn {
-            background: linear-gradient(180deg, #3a6fd8 0%, #2850a8 100%);
-        }
-        .cat-ai .app-btn:hover {
-            background: linear-gradient(180deg, #4a80e8 0%, #3060c0 100%);
-            box-shadow: 0 4px 18px rgba(70,120,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-tool .app-btn {
-            background: linear-gradient(180deg, #8040c8 0%, #5e2a98 100%);
-        }
-        .cat-tool .app-btn:hover {
-            background: linear-gradient(180deg, #9555dd 0%, #7035b0 100%);
-            box-shadow: 0 4px 18px rgba(160,80,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-game .app-btn {
-            background: linear-gradient(180deg, #2d8a2d 0%, #1d6520 100%);
-        }
-        .cat-game .app-btn:hover {
-            background: linear-gradient(180deg, #3aa03a 0%, #287828 100%);
-            box-shadow: 0 4px 18px rgba(80,200,80,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-manual .app-btn {
-            background: linear-gradient(180deg, #bf5630 0%, #8f3a1e 100%);
-        }
-        .cat-manual .app-btn:hover {
-            background: linear-gradient(180deg, #d46840 0%, #a04828 100%);
-            box-shadow: 0 4px 18px rgba(255,138,101,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-monitor .app-btn {
-            background: linear-gradient(180deg, #0d9488 0%, #0a706a 100%);
-        }
-        .cat-monitor .app-btn:hover {
-            background: linear-gradient(180deg, #14b8a6 0%, #0d9488 100%);
-            box-shadow: 0 4px 18px rgba(45,212,191,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-sailing .app-btn {
-            background: linear-gradient(180deg, #1a7fb5 0%, #0e5a82 100%);
-        }
-        .cat-sailing .app-btn:hover {
-            background: linear-gradient(180deg, #2090cc 0%, #1470a0 100%);
-            box-shadow: 0 4px 18px rgba(79,195,247,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-cuina .app-btn {
-            background: linear-gradient(180deg, #d4712a 0%, #a85520 100%);
-        }
-        .cat-cuina .app-btn:hover {
-            background: linear-gradient(180deg, #e8863a 0%, #c06828 100%);
-            box-shadow: 0 4px 18px rgba(232,134,58,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-vivenda .app-btn {
-            background: linear-gradient(180deg, #7c4dff 0%, #5e35b1 100%);
-        }
-        .cat-vivenda .app-btn:hover {
-            background: linear-gradient(180deg, #9575cd 0%, #7c4dff 100%);
-            box-shadow: 0 4px 18px rgba(124,77,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .cat-music {
-            grid-column: 1 / -1;
-        }
-        .cat-music .apps {
+        /* Grid spans */
+        .span-4 { grid-column: span 4; }
+        .span-3 { grid-column: span 3; }
+        .span-2 { grid-column: span 2; }
+
+        /* Music sub-groups */
+        .music-groups {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
-        .cat-music > .category-body > .apps > .sub-group .apps {
+        .music-sub {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .sub-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .sub-icon { font-size: 0.9rem; opacity: 0.7; }
+        .sub-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .sub-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* App links */
+        .apps {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
-        .cat-sailing .category-banner {
-            height: 180px;
-            object-fit: contain;
-            background: linear-gradient(135deg, #0a3d62 0%, #1a6b8a 50%, #2e86c1 100%);
+        .app-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            color: var(--text-primary);
+            font: 600 0.84rem/1.2 'Inter', sans-serif;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .app-link:hover {
+            background: var(--btn-hover-bg, rgba(255,255,255,0.08));
+            border-color: var(--btn-hover-border, rgba(255,255,255,0.15));
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--btn-hover-shadow, rgba(0,0,0,0.2));
+        }
+        .app-link .ico {
+            font-size: 1.1rem;
+            opacity: 0.75;
+            transition: opacity 0.2s;
+        }
+        .app-link:hover .ico { opacity: 1; }
+        .app-link[hidden] { display: none !important; }
+
+        /* Category accent hover colors */
+        .card-music .app-link {
+            --btn-hover-bg: rgba(255,170,0,0.15);
+            --btn-hover-border: rgba(255,170,0,0.35);
+            --btn-hover-shadow: rgba(255,170,0,0.15);
+        }
+        .card-ai .app-link {
+            --btn-hover-bg: rgba(122,175,255,0.15);
+            --btn-hover-border: rgba(122,175,255,0.35);
+            --btn-hover-shadow: rgba(122,175,255,0.15);
+        }
+        .card-tools .app-link {
+            --btn-hover-bg: rgba(200,160,255,0.15);
+            --btn-hover-border: rgba(200,160,255,0.35);
+            --btn-hover-shadow: rgba(200,160,255,0.15);
+        }
+        .card-sailing .app-link {
+            --btn-hover-bg: rgba(79,195,247,0.15);
+            --btn-hover-border: rgba(79,195,247,0.35);
+            --btn-hover-shadow: rgba(79,195,247,0.15);
+        }
+        .card-games .app-link {
+            --btn-hover-bg: rgba(102,204,102,0.15);
+            --btn-hover-border: rgba(102,204,102,0.35);
+            --btn-hover-shadow: rgba(102,204,102,0.15);
+        }
+
+        /* Quick Access */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+            color: var(--text-primary);
+            text-decoration: none;
+            font: 600 0.82rem/1.2 'Inter', sans-serif;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quick-link:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .quick-link[hidden] { display: none !important; }
+        .qa-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--qa-accent);
+            flex-shrink: 0;
+        }
+        .qa-icon {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        .qa-label { flex: 1; }
+        .qa-arrow {
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .quick-link:hover .qa-arrow {
+            opacity: 1;
+            transform: translateX(3px);
         }
 
         /* Regles de Regates widget */
         .rules-widget {
-            margin-top: 14px;
-            border: 1px solid rgba(79,195,247,0.2);
-            border-radius: 10px;
-            background: rgba(10,61,98,0.35);
+            margin-top: 16px;
+            border: 1px solid rgba(79,195,247,0.15);
+            border-radius: 12px;
+            background: rgba(10,61,98,0.2);
             overflow: hidden;
         }
+        .rules-header {
+            display: flex;
+            align-items: center;
+        }
         .rules-toggle {
+            flex: 1;
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 100%;
-            padding: 11px 16px;
-            background: linear-gradient(180deg, rgba(26,127,181,0.4) 0%, rgba(14,90,130,0.4) 100%);
+            padding: 12px 16px;
+            background: transparent;
             border: none;
-            color: #4fc3f7;
-            font-size: 0.85em;
-            font-weight: 700;
+            color: var(--accent-sailing);
+            font: 700 0.78rem/1 'Inter', sans-serif;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
             transition: background 0.2s;
         }
-        .rules-toggle:hover {
-            background: linear-gradient(180deg, rgba(32,144,204,0.5) 0%, rgba(20,112,160,0.5) 100%);
-        }
+        .rules-toggle:hover { background: rgba(79,195,247,0.06); }
         .rules-toggle .arrow {
             transition: transform 0.3s;
-            font-size: 0.75em;
+            font-size: 0.7rem;
         }
-        .rules-toggle.open .arrow {
-            transform: rotate(90deg);
+        .rules-toggle.open .arrow { transform: rotate(90deg); }
+        .rules-edit-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            color: rgba(79,195,247,0.4);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s;
         }
+        .rules-edit-btn:hover { color: var(--accent-sailing); }
+        .rules-edit-btn.active { color: var(--gold); }
+
         .rules-content {
-            display: none;
-            padding: 12px 16px 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .rules-content.open {
-            display: block;
-        }
+        .rules-content.open { max-height: 800px; }
+        .rules-content-inner { padding: 4px 16px 16px; }
+
         .rules-section-title {
-            font-size: 0.75em;
+            font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: rgba(79,195,247,0.6);
-            margin: 12px 0 8px;
+            color: rgba(79,195,247,0.5);
+            margin: 14px 0 8px;
             font-weight: 600;
         }
-        .rules-section-title:first-child {
-            margin-top: 0;
-        }
+        .rules-section-title:first-child { margin-top: 0; }
         .rules-list {
             list-style: none;
             display: flex;
@@ -305,21 +466,20 @@
             gap: 8px;
             padding: 8px 12px;
             border-radius: 8px;
-            background: rgba(26,127,181,0.2);
+            background: rgba(26,127,181,0.12);
             color: #c8e8ff;
             text-decoration: none;
-            font-size: 0.82em;
-            font-weight: 500;
+            font: 500 0.8rem/1.3 'Inter', sans-serif;
             transition: all 0.2s;
-            border: 1px solid rgba(79,195,247,0.1);
+            border: 1px solid rgba(79,195,247,0.08);
         }
         .rules-list a:hover {
-            background: rgba(32,144,204,0.35);
-            border-color: rgba(79,195,247,0.25);
+            background: rgba(32,144,204,0.25);
+            border-color: rgba(79,195,247,0.2);
             transform: translateX(3px);
         }
         .rules-list .badge {
-            font-size: 0.65em;
+            font-size: 0.6rem;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 700;
@@ -328,130 +488,142 @@
             margin-left: auto;
             flex-shrink: 0;
         }
-        .badge-video { background: rgba(255,60,60,0.25); color: #ff7070; }
-        .badge-pdf   { background: rgba(255,170,0,0.25); color: #ffcc44; }
-        .badge-link  { background: rgba(79,195,247,0.25); color: #4fc3f7; }
+        .badge-video { background: rgba(255,60,60,0.2); color: #ff7070; }
+        .badge-pdf   { background: rgba(255,170,0,0.2); color: #ffcc44; }
+        .badge-link  { background: rgba(79,195,247,0.2); color: #4fc3f7; }
 
-        .rules-header {
-            display: flex;
-            align-items: center;
-        }
-        .rules-toggle {
-            flex: 1;
-        }
-        .rules-edit-btn {
-            padding: 8px 14px;
-            background: transparent;
-            border: none;
-            color: rgba(79,195,247,0.5);
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .rules-edit-btn:hover {
-            color: #4fc3f7;
-        }
-        .rules-edit-btn.active {
-            color: #ffaa00;
-        }
-
-        /* Admin controls */
         .rules-item-actions {
             display: none;
             margin-left: auto;
             gap: 4px;
             flex-shrink: 0;
         }
-        .editing .rules-item-actions {
-            display: flex;
-        }
+        .editing .rules-item-actions { display: flex; }
         .rules-item-actions button {
             padding: 3px 8px;
             border: none;
             border-radius: 4px;
-            font-size: 0.7em;
+            font-size: 0.65rem;
             cursor: pointer;
             font-weight: 600;
         }
-        .btn-rename {
-            background: rgba(79,195,247,0.25);
-            color: #4fc3f7;
-        }
-        .btn-delete {
-            background: rgba(255,60,60,0.25);
-            color: #ff7070;
-        }
-        .btn-rename:hover { background: rgba(79,195,247,0.4); }
-        .btn-delete:hover { background: rgba(255,60,60,0.4); }
+        .btn-rename { background: rgba(79,195,247,0.2); color: #4fc3f7; }
+        .btn-delete { background: rgba(255,60,60,0.2); color: #ff7070; }
+        .btn-rename:hover { background: rgba(79,195,247,0.35); }
+        .btn-delete:hover { background: rgba(255,60,60,0.35); }
 
         .rules-add-bar {
             display: none;
             gap: 6px;
             margin-top: 10px;
             padding: 10px 12px;
-            background: rgba(26,127,181,0.15);
+            background: rgba(26,127,181,0.1);
             border-radius: 8px;
-            border: 1px dashed rgba(79,195,247,0.25);
+            border: 1px dashed rgba(79,195,247,0.2);
         }
-        .editing .rules-add-bar {
-            display: flex;
-            flex-wrap: wrap;
-        }
+        .editing .rules-add-bar { display: flex; flex-wrap: wrap; }
         .rules-add-bar select,
         .rules-add-bar input {
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid rgba(79,195,247,0.3);
-            background: rgba(10,30,50,0.8);
-            color: #e8e8e8;
-            font-size: 0.8em;
+            border: 1px solid rgba(79,195,247,0.2);
+            background: rgba(10,30,50,0.6);
+            color: var(--text-primary);
+            font: 400 0.78rem/1 'Inter', sans-serif;
         }
         .rules-add-bar input { flex: 1; min-width: 120px; }
         .rules-add-bar button {
             padding: 6px 14px;
             border-radius: 6px;
             border: none;
-            background: linear-gradient(180deg, #1a7fb5 0%, #0e5a82 100%);
-            color: #fff;
-            font-size: 0.8em;
-            font-weight: 600;
+            background: rgba(79,195,247,0.2);
+            color: var(--accent-sailing);
+            font: 600 0.78rem/1 'Inter', sans-serif;
             cursor: pointer;
+            transition: background 0.2s;
         }
-        .rules-add-bar button:hover {
-            background: linear-gradient(180deg, #2090cc 0%, #1470a0 100%);
-        }
+        .rules-add-bar button:hover { background: rgba(79,195,247,0.3); }
         .rules-empty {
             text-align: center;
             padding: 16px;
-            color: rgba(79,195,247,0.4);
-            font-size: 0.82em;
+            color: rgba(79,195,247,0.35);
+            font-size: 0.8rem;
             font-style: italic;
         }
 
+        /* Footer */
         footer {
             text-align: center;
-            padding: 24px 20px;
-            color: #334;
-            font-size: 0.75em;
+            padding: 32px 20px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
             margin-top: auto;
+            position: relative;
+            z-index: 1;
         }
         .footer-version {
             margin-top: 4px;
-            font-size: 0.9em;
-            color: #ffaa00;
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 600;
             letter-spacing: 0.5px;
         }
 
+        /* backdrop-filter fallback */
+        @supports not (backdrop-filter: blur(1px)) {
+            .card, .search-bar input {
+                background: rgba(20, 25, 50, 0.9);
+            }
+        }
+
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .bento { grid-template-columns: repeat(2, 1fr); }
+            .span-4 { grid-column: span 2; }
+            .span-3 { grid-column: span 2; }
+            .span-2 { grid-column: span 2; }
+            .music-groups { grid-template-columns: repeat(2, 1fr); }
+            .music-groups .music-sub:last-child { grid-column: span 2; }
+            .quick-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Mobile */
         @media (max-width: 700px) {
-            header { padding: 28px 16px 20px; }
-            header h1 { font-size: 1.7em; }
-            .content { padding: 0 16px 32px; grid-template-columns: 1fr; }
-            .category-banner { height: 100px; }
-            .category-body { padding: 12px 16px 14px; }
-            .app-btn { padding: 9px 16px; font-size: 0.85em; }
-            .cat-music .apps {
+            header { padding: 32px 16px 8px; }
+            header h1 { font-size: 1.6rem; }
+            .search-bar { margin: 16px 16px 4px; max-width: none; }
+            .bento {
+                padding: 16px 16px 32px;
                 grid-template-columns: 1fr;
             }
+            .span-4, .span-3, .span-2 { grid-column: span 1; }
+            .card { padding: 18px; }
+            .music-groups { grid-template-columns: 1fr; }
+            .music-groups .music-sub:last-child { grid-column: span 1; }
+            .music-sub-toggle {
+                cursor: pointer;
+                user-select: none;
+            }
+            .music-sub-toggle .sub-arrow {
+                display: inline;
+                font-size: 0.6rem;
+                transition: transform 0.3s;
+            }
+            .music-sub .apps { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+            .music-sub.open .apps { max-height: 600px; }
+            .music-sub.open .sub-arrow { transform: rotate(90deg); }
+            .quick-grid { grid-template-columns: 1fr 1fr; }
+            .app-link {
+                padding: 9px 14px;
+                font-size: 0.82rem;
+                width: 100%;
+            }
+        }
+
+        /* Desktop: hide mobile toggle arrow */
+        @media (min-width: 701px) {
+            .sub-arrow { display: none !important; }
+            .music-sub .apps { max-height: none !important; overflow: visible !important; }
         }
     </style>
 </head>
@@ -459,251 +631,311 @@
 
 <header>
     <h1>Apps XRoig</h1>
+    <p>Personal app launcher</p>
 </header>
 
-<div class="content">
+<div class="search-bar">
+    <span class="search-icon">&#128269;</span>
+    <input type="text" id="appSearch" placeholder="Cercar app..." autocomplete="off" />
+    <kbd>/</kbd>
+</div>
 
-    <div class="category cat-music">
-        <img class="category-banner" src="assets/icons/musica.jpg" alt="Musica">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Musica</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <div class="sub-group">
-                    <div class="sub-group-header">
-                        <span class="sub-group-icon">&#127891;</span>
-                        <span class="sub-group-title">Aprenentatge</span>
-                        <span class="sub-group-line"></span>
-                    </div>
-                    <div class="apps">
-                        <a class="app-btn" href="entrenador-partitures/index.html">
-                            <span class="ico">&#9835;</span> Entrenador de Partitures
-                        </a>
-                        <a class="app-btn" href="entrenador-partitures/acords.html">
-                            <span class="ico">&#9836;</span> Analitzador d'Acords
-                        </a>
-                        <a class="app-btn" href="analisi-harmonica/index.html">
-                            <span class="ico">&#127932;</span> An&agrave;lisi Harm&ograve;nica
-                        </a>
-                        <a class="app-btn" href="/quina-dificultat/" data-local="http://localhost:5004">
-                            <span class="ico">&#127932;</span> Quina Dificultat?
-                        </a>
-                        <a class="app-btn" href="piano-teacher/index.html">
-                            <span class="ico">&#127929;</span> Piano Teacher
-                        </a>
-                    </div>
+<div class="bento">
+
+    <!-- MUSICA (4 cols) -->
+    <div class="card card-music span-4" style="--card-accent: var(--accent-music)">
+        <div class="card-header">
+            <svg class="card-icon" viewBox="0 0 64 64" fill="none">
+                <defs><linearGradient id="mg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ff8c00"/></linearGradient></defs>
+                <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+                <path d="M44 12v30a8 8 0 1 1-4-6.93V20H28v24a8 8 0 1 1-4-6.93V16h20z" fill="url(#mg)"/>
+                <rect x="24" y="16" width="20" height="4" rx="1" fill="url(#mg)" opacity="0.5"/>
+            </svg>
+            <span class="card-title">Musica</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="music-groups">
+            <div class="music-sub open">
+                <div class="sub-header music-sub-toggle" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="sub-icon">&#127891;</span>
+                    <span class="sub-title">Aprenentatge</span>
+                    <span class="sub-arrow">&#9654;</span>
+                    <span class="sub-line"></span>
                 </div>
-
-                <div class="sub-group">
-                    <div class="sub-group-header">
-                        <span class="sub-group-icon">&#128295;</span>
-                        <span class="sub-group-title">Eines de Músic</span>
-                        <span class="sub-group-line"></span>
-                    </div>
-                    <div class="apps">
-                        <a class="app-btn" href="/acords/" data-local="http://localhost:5070">
-                            <span class="ico">&#127929;</span> Annotador d'Acords PDF
-                        </a>
-                        <a class="app-btn" href="/repertori/" data-local="http://localhost:5075">
-                            <span class="ico">&#9834;</span> Repertori
-                        </a>
-                        <a class="app-btn" href="/partitura/" data-local="http://localhost:5050">
-                            <span class="ico">&#9833;</span> Conversor MusicXML
-                        </a>
-                        <a class="app-btn" href="piano-search/index.html">
-                            <span class="ico">&#127929;</span> Piano Search
-                        </a>
-                        <a class="app-btn" href="digitacio/index.html">
-                            <span class="ico">&#9997;</span> Digitacio
-                        </a>
-                    </div>
-                </div>
-
-                <div class="sub-group">
-                    <div class="sub-group-header">
-                        <span class="sub-group-icon">&#127926;</span>
-                        <span class="sub-group-title">Concerts i Programes</span>
-                        <span class="sub-group-line"></span>
-                    </div>
-                    <div class="apps">
-                        <a class="app-btn" href="concert-10e-aniversari/index.html">
-                            <span class="ico">&#127895;</span> Concert 10è Aniversari
-                        </a>
-                        <a class="app-btn" href="rituals-palau/index.html">
-                            <span class="ico">&#127963;</span> Rituals al Palau 26-27
-                        </a>
-                        <a class="app-btn" href="musicaolerdola/index.html">
-                            <span class="ico">&#127926;</span> Amics Música Olèrdola
-                        </a>
-                    </div>
+                <div class="apps">
+                    <a class="app-link" href="entrenador-partitures/index.html">
+                        <span class="ico">&#9835;</span> Entrenador de Partitures
+                    </a>
+                    <a class="app-link" href="entrenador-partitures/acords.html">
+                        <span class="ico">&#9836;</span> Analitzador d'Acords
+                    </a>
+                    <a class="app-link" href="analisi-harmonica/index.html">
+                        <span class="ico">&#127932;</span> An&agrave;lisi Harm&ograve;nica
+                    </a>
+                    <a class="app-link" href="/quina-dificultat/" data-local="http://localhost:5004">
+                        <span class="ico">&#127932;</span> Quina Dificultat?
+                    </a>
+                    <a class="app-link" href="piano-teacher/index.html">
+                        <span class="ico">&#127929;</span> Piano Teacher
+                    </a>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="category cat-ai">
-        <img class="category-banner" src="assets/icons/ia.png" alt="IA">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Intel&#183;lig&#232;ncia Artificial</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="http://localhost:5000" data-local="http://localhost:5000" data-remote-disabled title="No disponible al servidor">
-                    <span class="ico">&#9655;</span> VideoMind
-                </a>
-                <a class="app-btn" href="/text2audio/" data-local="http://localhost:5065">
-                    <span class="ico">&#127911;</span> Text2Audio
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="category cat-tool">
-        <img class="category-banner" src="assets/icons/eines.png" alt="Eines">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Eines Digitals</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="webdl/index.html">
-                    <span class="ico">&#8615;</span> WebDL
-                </a>
-                <a class="app-btn" href="https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:" target="_blank">
-                    <span class="ico">&#9729;</span> AWS Console
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="category cat-monitor">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Monitoring i &#218;s</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="analytics.html">
-                    <span class="ico">&#128202;</span> Analytics Avui Regu
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="category cat-sailing">
-        <img class="category-banner" src="assets/icons/sailing.png" alt="Sailing">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Sailing</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="avui-regu/index.html">
-                    <span class="ico">&#9973;</span> Avui Regu?
-                </a>
-                <a class="app-btn" href="menorca-nautica/index.html">
-                    <span class="ico">&#127754;</span> Bufa a Menorca?
-                </a>
-            </div>
-
-            <!-- Regles de Regates -->
-            <div class="rules-widget">
-                <div class="rules-header">
-                    <button class="rules-toggle" onclick="this.classList.toggle('open');document.getElementById('rulesContent').classList.toggle('open')">
-                        <span class="arrow">&#9654;</span> Regles de Regates
-                    </button>
-                    <button class="rules-edit-btn" onclick="rulesAdmin.toggleEdit()" title="Editar">&#9998;</button>
+            <div class="music-sub open">
+                <div class="sub-header music-sub-toggle" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="sub-icon">&#128295;</span>
+                    <span class="sub-title">Eines de M&uacute;sic</span>
+                    <span class="sub-arrow">&#9654;</span>
+                    <span class="sub-line"></span>
                 </div>
-                <div id="rulesContent" class="rules-content"></div>
+                <div class="apps">
+                    <a class="app-link" href="/acords/" data-local="http://localhost:5070">
+                        <span class="ico">&#127929;</span> Annotador d'Acords PDF
+                    </a>
+                    <a class="app-link" href="/repertori/" data-local="http://localhost:5075">
+                        <span class="ico">&#9834;</span> Repertori
+                    </a>
+                    <a class="app-link" href="/partitura/" data-local="http://localhost:5050">
+                        <span class="ico">&#9833;</span> Conversor MusicXML
+                    </a>
+                    <a class="app-link" href="piano-search/index.html">
+                        <span class="ico">&#127929;</span> Piano Search
+                    </a>
+                    <a class="app-link" href="digitacio/index.html">
+                        <span class="ico">&#9997;</span> Digitacio
+                    </a>
+                </div>
+            </div>
+
+            <div class="music-sub open">
+                <div class="sub-header music-sub-toggle" onclick="this.parentElement.classList.toggle('open')">
+                    <span class="sub-icon">&#127926;</span>
+                    <span class="sub-title">Concerts i Programes</span>
+                    <span class="sub-arrow">&#9654;</span>
+                    <span class="sub-line"></span>
+                </div>
+                <div class="apps">
+                    <a class="app-link" href="concert-10e-aniversari/index.html">
+                        <span class="ico">&#127895;</span> Concert 10&egrave; Aniversari
+                    </a>
+                    <a class="app-link" href="rituals-palau/index.html">
+                        <span class="ico">&#127963;</span> Rituals al Palau 26-27
+                    </a>
+                    <a class="app-link" href="musicaolerdola/index.html">
+                        <span class="ico">&#127926;</span> Amics M&uacute;sica Ol&egrave;rdola
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="category cat-cuina">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Cuina</span>
-                <span class="category-line"></span>
+    <!-- IA (1 col) -->
+    <div class="card card-ai" style="--card-accent: var(--accent-ai)">
+        <div class="card-header">
+            <svg class="card-icon" viewBox="0 0 64 64" fill="none">
+                <defs><linearGradient id="ag" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7aafff"/><stop offset="100%" stop-color="#4060ff"/></linearGradient></defs>
+                <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+                <path d="M32 14c-5 0-9 2-11 5.5C18.5 20 17 22.5 17 26c0 2.5 1 4.7 2.5 6.3-.3 1-.5 2.2-.5 3.7 0 4 2 7 5 8.5 1.5 3.3 4.5 5.5 8 5.5s6.5-2.2 8-5.5c3-1.5 5-4.5 5-8.5 0-1.5-.2-2.7-.5-3.7C46 30.7 47 28.5 47 26c0-3.5-1.5-6-4-6.5C41 16 37 14 32 14z" fill="url(#ag)" opacity="0.9"/>
+                <line x1="32" y1="16" x2="32" y2="48" stroke="#1a1a2e" stroke-width="1.5" opacity="0.4"/>
+                <circle cx="27" cy="24" r="2" fill="#fff" opacity="0.7"/><circle cx="37" cy="24" r="2" fill="#fff" opacity="0.7"/>
+                <circle cx="25" cy="33" r="2" fill="#fff" opacity="0.7"/><circle cx="39" cy="33" r="2" fill="#fff" opacity="0.7"/>
+                <circle cx="29" cy="41" r="2" fill="#fff" opacity="0.7"/><circle cx="35" cy="41" r="2" fill="#fff" opacity="0.7"/>
+                <line x1="27" y1="24" x2="37" y2="24" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+                <line x1="27" y1="24" x2="25" y2="33" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+                <line x1="37" y1="24" x2="39" y2="33" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+                <line x1="25" y1="33" x2="29" y2="41" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+                <line x1="39" y1="33" x2="35" y2="41" stroke="#fff" stroke-width="0.8" opacity="0.3"/>
+            </svg>
+            <span class="card-title">Intel&middot;lig&egrave;ncia Artificial</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="apps">
+            <a class="app-link" href="http://localhost:5000" data-local="http://localhost:5000" data-remote-disabled title="No disponible al servidor">
+                <span class="ico">&#9655;</span> VideoMind
+            </a>
+            <a class="app-link" href="/text2audio/" data-local="http://localhost:5065">
+                <span class="ico">&#127911;</span> Text2Audio
+            </a>
+        </div>
+    </div>
+
+    <!-- EINES DIGITALS (1 col) -->
+    <div class="card card-tools" style="--card-accent: var(--accent-tools)">
+        <div class="card-header">
+            <svg class="card-icon" viewBox="0 0 64 64" fill="none">
+                <defs><linearGradient id="tg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c8a0ff"/><stop offset="100%" stop-color="#8040e0"/></linearGradient></defs>
+                <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+                <path d="M42.5 15.5a9 9 0 0 0-12.2 2.3l-1.6 2.2-10.4 10.4a5 5 0 0 0 7.07 7.07L35.8 27l2.2-1.6a9 9 0 0 0 4.5-9.9z" fill="url(#tg)" opacity="0.85"/>
+                <path d="M40 36h-3l-.7-1.7 2.1-2.1-2.8-2.8-2.1 2.1L32 30.8V28h-4v2.8l-1.7.7-2.1-2.1-2.8 2.8 2.1 2.1-.7 1.7h-3v4h3l.7 1.7-2.1 2.1 2.8 2.8 2.1-2.1 1.7.7V48h4v-3l1.7-.7 2.1 2.1 2.8-2.8-2.1-2.1.7-1.7h3v-4z" fill="url(#tg)" opacity="0.6"/>
+                <circle cx="30" cy="38" r="3" fill="#1a1a2e" opacity="0.5"/>
+            </svg>
+            <span class="card-title">Eines Digitals</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="apps">
+            <a class="app-link" href="webdl/index.html">
+                <span class="ico">&#8615;</span> WebDL
+            </a>
+            <a class="app-link" href="https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:" target="_blank">
+                <span class="ico">&#9729;</span> AWS Console
+            </a>
+        </div>
+    </div>
+
+    <!-- SAILING (2 cols) -->
+    <div class="card card-sailing span-2" style="--card-accent: var(--accent-sailing)">
+        <div class="card-header">
+            <span class="card-emoji">&#9973;</span>
+            <span class="card-title">Sailing</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="apps">
+            <a class="app-link" href="avui-regu/index.html">
+                <span class="ico">&#9973;</span> Avui Regu?
+            </a>
+            <a class="app-link" href="menorca-nautica/index.html">
+                <span class="ico">&#127754;</span> Bufa a Menorca?
+            </a>
+        </div>
+        <div class="rules-widget">
+            <div class="rules-header">
+                <button class="rules-toggle" onclick="this.classList.toggle('open');document.getElementById('rulesContent').classList.toggle('open')">
+                    <span class="arrow">&#9654;</span> Regles de Regates
+                </button>
+                <button class="rules-edit-btn" onclick="rulesAdmin.toggleEdit()" title="Editar">&#9998;</button>
             </div>
-            <div class="apps">
-                <a class="app-btn" href="cuinetas/index.html">
-                    <span class="ico">&#127859;</span> Cuinetas
-                </a>
+            <div id="rulesContent" class="rules-content">
+                <div class="rules-content-inner"></div>
             </div>
         </div>
     </div>
 
-    <div class="category cat-vivenda">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Vivenda</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="/cerca-vivenda/index.html">
-                    <span class="ico">&#127968;</span> Cerca Vivenda BCN
-                </a>
-            </div>
+    <!-- JOCS (1 col) -->
+    <div class="card card-games" style="--card-accent: var(--accent-games)">
+        <div class="card-header">
+            <svg class="card-icon" viewBox="0 0 64 64" fill="none">
+                <defs><linearGradient id="gg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#88ee88"/><stop offset="100%" stop-color="#339933"/></linearGradient></defs>
+                <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+                <path d="M22 48h20v-3H22v3zm2-5h16l1-4c0-4-2-7-5-9l1-6c0-1-.5-2-1.5-2h-1l1-3c.3-1-.2-2-1-2.5-.8-.5-1.8-.3-2.4.4L27 28c-2 2.5-3 5-3 8l0 7z" fill="url(#gg)" opacity="0.9"/>
+                <circle cx="33" cy="24" r="1.5" fill="#1a1a2e" opacity="0.7"/>
+                <rect x="18" y="50" width="6" height="3" fill="url(#gg)" opacity="0.3"/><rect x="30" y="50" width="6" height="3" fill="url(#gg)" opacity="0.3"/>
+                <rect x="42" y="50" width="4" height="3" fill="url(#gg)" opacity="0.3"/><rect x="24" y="53" width="6" height="3" fill="url(#gg)" opacity="0.3"/>
+                <rect x="36" y="53" width="6" height="3" fill="url(#gg)" opacity="0.3"/>
+            </svg>
+            <span class="card-title">Jocs</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="apps">
+            <a class="app-link" href="chess/index.html">
+                <span class="ico">&#9822;</span> Escacs 3D
+            </a>
+            <a class="app-link" href="chess-openings/index.html">
+                <span class="ico">&#9816;</span> Obertures d'Escacs
+            </a>
         </div>
     </div>
 
-    <div class="category cat-manual">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Manuals Usuari</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="manuals/kinetico-2050c.html">
-                    <span class="ico">&#128167;</span> Kinetico 2050c
-                </a>
-            </div>
+    <!-- QUICK ACCESS (3 cols) -->
+    <div class="card span-3" style="--card-accent: rgba(255,255,255,0.3)">
+        <div class="card-header">
+            <span class="card-emoji">&#9889;</span>
+            <span class="card-title" style="color: var(--text-secondary)">Acc&eacute;s R&agrave;pid</span>
+            <span class="card-line"></span>
+        </div>
+        <div class="quick-grid">
+            <a class="quick-link" href="analytics.html" style="--qa-accent: var(--accent-monitor)">
+                <span class="qa-dot"></span>
+                <span class="qa-icon">&#128202;</span>
+                <span class="qa-label">Analytics Avui Regu</span>
+                <span class="qa-arrow">&#8594;</span>
+            </a>
+            <a class="quick-link" href="cuinetas/index.html" style="--qa-accent: var(--accent-cuina)">
+                <span class="qa-dot"></span>
+                <span class="qa-icon">&#127859;</span>
+                <span class="qa-label">Cuinetas</span>
+                <span class="qa-arrow">&#8594;</span>
+            </a>
+            <a class="quick-link" href="/cerca-vivenda/index.html" style="--qa-accent: var(--accent-vivenda)">
+                <span class="qa-dot"></span>
+                <span class="qa-icon">&#127968;</span>
+                <span class="qa-label">Cerca Vivenda BCN</span>
+                <span class="qa-arrow">&#8594;</span>
+            </a>
+            <a class="quick-link" href="manuals/kinetico-2050c.html" style="--qa-accent: var(--accent-manual)">
+                <span class="qa-dot"></span>
+                <span class="qa-icon">&#128167;</span>
+                <span class="qa-label">Kinetico 2050c</span>
+                <span class="qa-arrow">&#8594;</span>
+            </a>
         </div>
     </div>
 
-    <div class="category cat-game">
-        <img class="category-banner" src="assets/icons/jocs.jpeg" alt="Jocs">
-        <div class="category-body">
-            <div class="category-header">
-                <span class="category-title">Jocs</span>
-                <span class="category-line"></span>
-            </div>
-            <div class="apps">
-                <a class="app-btn" href="chess/index.html">
-                    <span class="ico">&#9822;</span> Escacs 3D
-                </a>
-                <a class="app-btn" href="chess-openings/index.html">
-                    <span class="ico">&#9816;</span> Obertures d'Escacs
-                </a>
-            </div>
-        </div>
-    </div>
-
+    <div class="search-no-results" id="noResults">Cap app trobada</div>
 </div>
 
 <footer>
     Apps XRoig &middot; 2026
-    <p class="footer-version">v2.7</p>
+    <p class="footer-version">v3.0</p>
 </footer>
 
 <script>
 (() => {
     const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
     document.querySelectorAll('a[data-local]').forEach(a => {
-        if (isLocal) {
-            a.href = a.dataset.local;
-        }
+        if (isLocal) a.href = a.dataset.local;
     });
-    // En remot, desactivar botons marcats amb data-remote-disabled
     if (!isLocal) {
         document.querySelectorAll('[data-remote-disabled]').forEach(el => {
-            el.style.opacity = '0.4';
+            el.style.opacity = '0.3';
             el.style.cursor = 'not-allowed';
             el.style.pointerEvents = 'none';
+            el.style.borderStyle = 'dashed';
         });
+    }
+})();
+
+// Search
+(() => {
+    const input = document.getElementById('appSearch');
+    const noResults = document.getElementById('noResults');
+    const cards = document.querySelectorAll('.bento > .card');
+    const allLinks = document.querySelectorAll('.app-link, .quick-link');
+
+    let debounce;
+    input.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(filter, 80);
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement !== input && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            input.focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === input) {
+            input.value = '';
+            input.blur();
+            filter();
+        }
+    });
+
+    function filter() {
+        const q = input.value.trim().toLowerCase();
+        let anyVisible = false;
+
+        allLinks.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            const match = !q || text.includes(q);
+            link.hidden = !match;
+            if (match) anyVisible = true;
+        });
+
+        cards.forEach(card => {
+            const hasVisible = card.querySelector('.app-link:not([hidden]), .quick-link:not([hidden])');
+            card.hidden = q && !hasVisible;
+        });
+
+        noResults.classList.toggle('visible', q && !anyVisible);
     }
 })();
 
@@ -717,12 +949,11 @@ const rulesAdmin = (() => {
     function load() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) return JSON.parse(stored);
-        // Dades inicials
         return [
             { type: 'video', name: '10 Regles bàsiques de regata (subtítols en català)', url: 'regles-regates/regles-regates-ca.mp4' },
             { type: 'pdf', name: 'Racing Rules of Sailing 2025-2028 (World Sailing)', url: 'https://www.sailing.org/inside-world-sailing/rules-regulations/racing-rules-of-sailing/' },
             { type: 'link', name: 'RacingRulesOfSailing.org - Animacions interactives', url: 'https://www.racingrulesofsailing.org/' },
-            { type: 'link', name: 'World Sailing - Protestes i Apel\u00b7lacions', url: 'https://www.sailing.org/inside-world-sailing/rules-regulations/protest-and-appeals/' }
+            { type: 'link', name: 'World Sailing - Protestes i Apel·lacions', url: 'https://www.sailing.org/inside-world-sailing/rules-regulations/protest-and-appeals/' }
         ];
     }
 
@@ -731,7 +962,7 @@ const rulesAdmin = (() => {
     }
 
     function render() {
-        const container = document.getElementById('rulesContent');
+        const inner = document.querySelector('#rulesContent .rules-content-inner');
         const items = load();
         const grouped = { video: [], pdf: [], link: [] };
         items.forEach((item, i) => { item._idx = i; (grouped[item.type] || grouped.link).push(item); });
@@ -770,16 +1001,16 @@ const rulesAdmin = (() => {
             <input id="rulesNewUrl" placeholder="URL" />
             <button onclick="rulesAdmin.add()">Afegir</button>
         </div>`;
-        container.innerHTML = html;
-        if (editing) container.classList.add('editing');
-        else container.classList.remove('editing');
+        inner.innerHTML = html;
+        const content = document.getElementById('rulesContent');
+        if (editing) content.classList.add('editing');
+        else content.classList.remove('editing');
     }
 
     function toggleEdit() {
         editing = !editing;
         const btn = document.querySelector('.rules-edit-btn');
         btn.classList.toggle('active', editing);
-        // Obrir el panell si entrem en mode edició
         if (editing) {
             document.getElementById('rulesContent').classList.add('open');
             document.querySelector('.rules-toggle').classList.add('open');
@@ -817,13 +1048,10 @@ const rulesAdmin = (() => {
         }
     }
 
-    // Renderitzar al carregar
     render();
-
     return { toggleEdit, add, rename, remove };
 })();
 </script>
-
 
 </body>
 </html>
