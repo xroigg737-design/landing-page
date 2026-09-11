@@ -430,7 +430,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.7
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.8
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -727,6 +727,8 @@
         if (data.time_signature) h += summaryItem('Compàs', data.time_signature);
         h += summaryItem('Compassos', data.measures ? data.measures.length : '—');
         if (data.structure) h += summaryItem('Estructura', data.structure);
+        if (data.source_mode === 'retalls' && data.crop_count)
+            h += summaryItem('Lectura', data.crop_count + ' retalls ampliats');
         h += '</div>';
 
         if (data.modulations && data.modulations.length) {
