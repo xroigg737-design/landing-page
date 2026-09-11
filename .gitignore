@@ -1,3 +1,20 @@
 .DS_Store
 *.swp
 *~
+
+# Enllaços simbòlics locals a les apps (només per servir a localhost:8080)
+avui-regu
+cerca-vivenda
+chess
+chess-openings
+concert-10e-aniversari
+entrenador-partitures
+manuals
+menorca-nautica
+musicaolerdola
+piano-search
+piano-teacher
+webdl
+cuinetas
+digitacio
+rituals-palau
