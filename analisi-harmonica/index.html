@@ -104,7 +104,7 @@
         .range-input.show { display: flex; }
         .range-input label { font-size: 0.82em; color: rgba(255,255,255,0.5); }
         .range-input input {
-            width: 100px; padding: 7px 12px; border-radius: 8px;
+            width: 110px; padding: 7px 12px; border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
             color: #fff; font-size: 0.85em;
         }
@@ -374,6 +374,10 @@
             <label>Compassos:</label>
             <input type="text" id="measuresValue" placeholder="1-32">
         </div>
+        <div class="range-input" id="keyInput" title="Si la detecci&#243; autom&#224;tica s'equivoca, escriu-hi tu la tonalitat">
+            <label>Tonalitat:</label>
+            <input type="text" id="keyValue" placeholder="autom&#224;tica">
+        </div>
         <button class="btn-analyze" id="btnAnalyze">&#9835; Analitzar</button>
     </div>
 
@@ -430,7 +434,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.8
+    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.9
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -449,6 +453,8 @@
     const optionsRow = $('#optionsRow');
     const pagesInput = $('#pagesInput');
     const pagesValue = $('#pagesValue');
+    const keyInput = $('#keyInput');
+    const keyValue = $('#keyValue');
     const measuresInput = $('#measuresInput');
     const measuresValue = $('#measuresValue');
     const btnAnalyze = $('#btnAnalyze');
@@ -533,6 +539,8 @@
         fileSelected.classList.remove('show');
         optionsRow.classList.remove('show');
         pagesInput.classList.remove('show');
+        keyInput.classList.remove('show');
+        keyValue.value = '';
         measuresInput.classList.remove('show');
         fileInput.value = '';
     });
@@ -557,6 +565,7 @@
         const isPdf = ext === 'pdf';
         const isMxml = ['xml','musicxml','mxl'].includes(ext);
         pagesInput.classList.toggle('show', isPdf);
+        keyInput.classList.toggle('show', isPdf);
         measuresInput.classList.toggle('show', isMxml);
         hideError();
         results.classList.remove('show');
@@ -580,6 +589,8 @@
         if (pages) formData.append('pages', pages);
         const measures = measuresValue.value.trim();
         if (measures) formData.append('measures', measures);
+        const keyManual = keyValue.value.trim();
+        if (keyManual) formData.append('key', keyManual);
 
         try {
             await delay(400);
