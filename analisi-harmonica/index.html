@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analitzador Harmònic</title>
+    <title>Anàlisi Harmònica</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -322,6 +322,105 @@
             .measures-grid { grid-template-columns: 1fr; }
             .stats-panel { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* FONT SIZE SELECT */
+        .font-size-input {
+            display: none; align-items: center; gap: 8px;
+        }
+        .font-size-input.show { display: flex; }
+        .font-size-input label { font-size: 0.82em; color: rgba(255,255,255,0.5); }
+        .font-size-input select {
+            padding: 7px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+            color: #fff; font-size: 0.85em; font-family: inherit; outline: none;
+        }
+        .font-size-input select option { background: #1a1a2e; }
+
+        /* ACTIONS ROW */
+        .actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn-annotate {
+            padding: 12px 28px; border: none; border-radius: 10px;
+            background: linear-gradient(180deg, #2d8a2d 0%, #1d6520 100%);
+            color: #fff; font-size: 1em; font-weight: 700; cursor: pointer;
+            transition: all .2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .btn-annotate:hover { background: linear-gradient(180deg, #3aa03a 0%, #287828 100%); box-shadow: 0 4px 18px rgba(80,200,80,0.35); transform: translateY(-1px); }
+        .btn-annotate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        /* ANNOTATION SECTION */
+        .annotation-section { display: none; margin-top: 24px; }
+        .annotation-section.show { display: block; animation: fadeIn .4s ease; }
+
+        .annot-pipeline {
+            display: flex; align-items: center; gap: 0;
+            flex-wrap: wrap; justify-content: center; margin-bottom: 12px;
+        }
+        .annot-pipe-step {
+            display: flex; align-items: center; gap: 6px;
+            padding: 8px 14px; border-radius: 8px;
+            font-size: 0.82em; color: rgba(255,255,255,0.35); transition: all .3s;
+        }
+        .annot-pipe-step.done { color: #66cc66; }
+        .annot-pipe-step.active { color: #ffd700; }
+        .annot-pipe-step.error { color: #ff6060; }
+        .annot-pipe-step .ps-ico { font-size: 1.1em; }
+        .annot-pipe-arrow { color: rgba(255,255,255,0.15); font-size: 0.7em; margin: 0 2px; }
+
+        .annot-progress-bar {
+            height: 5px; border-radius: 3px;
+            background: rgba(255,255,255,0.06); overflow: hidden; margin-bottom: 10px;
+        }
+        .annot-progress-fill {
+            height: 100%; border-radius: 3px;
+            background: linear-gradient(90deg, #66cc66, #88ee88);
+            width: 0%; transition: width 0.4s ease;
+        }
+
+        .annot-log {
+            max-height: 140px; overflow-y: auto;
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-size: 0.78em; line-height: 1.6; color: rgba(255,255,255,0.4);
+            padding: 12px 14px; background: rgba(0,0,0,0.2);
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 12px;
+        }
+        .annot-log .log-ok { color: #66cc66; }
+        .annot-log .log-warn { color: #f0c060; }
+        .annot-log .log-err { color: #ff6060; }
+        .annot-log .log-info { color: #7aafff; }
+
+        .annot-result {
+            display: none; text-align: center; margin-top: 16px;
+        }
+        .annot-result.show { display: block; animation: fadeIn .4s ease; }
+        .annot-result-msg { font-size: 1.05em; color: #66cc66; margin-bottom: 14px; }
+
+        .btn-download {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 32px; border-radius: 10px;
+            background: linear-gradient(180deg, #2d8a2d 0%, #1d6520 100%);
+            color: #fff; font-size: 1em; font-weight: 700; text-decoration: none;
+            cursor: pointer; border: none; font-family: inherit;
+            transition: all .2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .btn-download:hover { background: linear-gradient(180deg, #3aa03a 0%, #287828 100%); box-shadow: 0 4px 18px rgba(80,200,80,0.35); transform: translateY(-1px); }
+
+        .annot-preview {
+            margin-top: 16px; border-radius: 12px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .annot-preview iframe {
+            width: 100%; height: 500px; border: none; background: #fff; display: block;
+        }
+
+        @media (max-width: 600px) {
+            .annot-preview iframe { height: 350px; }
+            .actions-row { flex-direction: column; }
+            .actions-row button { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -329,12 +428,12 @@
 <nav>
     <a class="home" href="../" title="Tornar a Apps XRoig">&#9664;</a>
     <span class="nav-sep">&#124;</span>
-    <span class="nav-title">Analitzador Harm&#242;nic</span>
+    <span class="nav-title">An&#224;lisi Harm&#242;nica</span>
 </nav>
 
 <div class="hero">
-    <h1>Analitzador Harm&#242;nic</h1>
-    <p class="subtitle">An&#224;lisi comp&#224;s per comp&#224;s amb IA</p>
+    <h1>An&#224;lisi Harm&#242;nica</h1>
+    <p class="subtitle">An&#224;lisi harm&#242;nica i anotaci&#243; d'acords amb IA</p>
     <div class="pills">
         <span class="pill">Xifrat rom&#224;</span>
         <span class="pill">Funcions tonals</span>
@@ -342,6 +441,7 @@
         <span class="pill">Modulacions</span>
         <span class="pill">Notes no harm&#242;niques</span>
         <span class="pill">PDF i MusicXML</span>
+        <span class="pill">Anotaci&#243; PDF</span>
     </div>
 </div>
 
@@ -378,7 +478,22 @@
             <label>Tonalitat:</label>
             <input type="text" id="keyValue" placeholder="autom&#224;tica">
         </div>
-        <button class="btn-analyze" id="btnAnalyze">&#9835; Analitzar</button>
+        <div class="font-size-input" id="fontSizeInput">
+            <label>Mida font:</label>
+            <select id="fontSizeValue">
+                <option value="auto">Auto</option>
+                <option value="7">7 pt</option>
+                <option value="8">8 pt</option>
+                <option value="9">9 pt</option>
+                <option value="10">10 pt</option>
+                <option value="11">11 pt</option>
+                <option value="12">12 pt</option>
+            </select>
+        </div>
+        <div class="actions-row">
+            <button class="btn-analyze" id="btnAnalyze">&#9835; Analitzar harmonia</button>
+            <button class="btn-annotate" id="btnAnnotate">&#128196; Anotar acords al PDF</button>
+        </div>
     </div>
 
     <!-- LOADING -->
@@ -394,6 +509,30 @@
 
     <!-- ERROR -->
     <div class="error-box" id="errorBox"></div>
+
+    <!-- ANNOTATION SECTION -->
+    <div class="annotation-section" id="annotationSection">
+        <div class="annot-pipeline" id="annotPipeline">
+            <div class="annot-pipe-step" data-step="upload"><span class="ps-ico">&#128196;</span> Pujada</div>
+            <span class="annot-pipe-arrow">&#9654;</span>
+            <div class="annot-pipe-step" data-step="barlines"><span class="ps-ico">|</span> Barres</div>
+            <span class="annot-pipe-arrow">&#9654;</span>
+            <div class="annot-pipe-step" data-step="notes"><span class="ps-ico">&#9835;</span> Notes</div>
+            <span class="annot-pipe-arrow">&#9654;</span>
+            <div class="annot-pipe-step" data-step="chords"><span class="ps-ico">&#127929;</span> Acords</div>
+            <span class="annot-pipe-arrow">&#9654;</span>
+            <div class="annot-pipe-step" data-step="annotate"><span class="ps-ico">&#9998;</span> Anotaci&#243;</div>
+        </div>
+        <div class="annot-progress-bar"><div class="annot-progress-fill" id="annotProgressFill"></div></div>
+        <div class="annot-log" id="annotLog"></div>
+        <div class="annot-result" id="annotResult">
+            <div class="annot-result-msg">&#10003; Partitura anotada correctament</div>
+            <a class="btn-download" id="annotDownload" download>&#128229; Descarregar PDF anotat</a>
+            <div class="annot-preview" id="annotPreview">
+                <iframe id="annotPreviewFrame"></iframe>
+            </div>
+        </div>
+    </div>
 
     <!-- RESULTS -->
     <div id="results">
@@ -434,7 +573,7 @@
 </div>
 
 <footer>
-    Analitzador Harm&#242;nic &middot; XRoig &middot; v2.9
+    An&#224;lisi Harm&#242;nica &middot; XRoig &middot; v3.0
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -542,6 +681,8 @@
         keyInput.classList.remove('show');
         keyValue.value = '';
         measuresInput.classList.remove('show');
+        fontSizeInput.classList.remove('show');
+        annotationSection.classList.remove('show');
         fileInput.value = '';
     });
 
@@ -567,8 +708,10 @@
         pagesInput.classList.toggle('show', isPdf);
         keyInput.classList.toggle('show', isPdf);
         measuresInput.classList.toggle('show', isMxml);
+        fontSizeInput.classList.toggle('show', isPdf);
         hideError();
         results.classList.remove('show');
+        annotationSection.classList.remove('show');
     }
 
     // Analysis
@@ -1562,6 +1705,165 @@
     function hideError() { errorBox.classList.remove('show'); }
     function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
     function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+    // ═══ ANNOTATION FUNCTIONALITY ═══
+    const btnAnnotate = $('#btnAnnotate');
+    const fontSizeInput = $('#fontSizeInput');
+    const fontSizeValue = $('#fontSizeValue');
+    const annotationSection = $('#annotationSection');
+    const annotProgressFill = $('#annotProgressFill');
+    const annotLog = $('#annotLog');
+    const annotResult = $('#annotResult');
+    const annotDownload = $('#annotDownload');
+    const annotPreviewFrame = $('#annotPreviewFrame');
+
+    btnAnnotate.addEventListener('click', annotateFile);
+
+    async function annotateFile() {
+        if (!selectedFile) return;
+        btnAnnotate.disabled = true;
+        btnAnalyze.disabled = true;
+        annotationSection.classList.add('show');
+        annotResult.classList.remove('show');
+        annotLog.innerHTML = '';
+        annotProgressFill.style.width = '0%';
+        results.classList.remove('show');
+        hideError();
+        resetAnnotPipeline();
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('notation', notation);
+        formData.append('font_size', fontSizeValue.value);
+        const pages = pagesValue.value.trim();
+        if (pages) formData.append('pages', pages);
+
+        setAnnotStep('upload', 'active');
+        annotLogMsg('Pujant fitxer...', 'info');
+
+        try {
+            const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
+            const API = isLocal ? 'http://localhost:5070' : '/acords';
+            const resp = await fetch(API + '/annotate', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({ error: 'Error ' + resp.status }));
+                throw new Error(err.error || 'Error ' + resp.status);
+            }
+
+            const contentType = resp.headers.get('content-type') || '';
+
+            if (contentType.includes('text/event-stream')) {
+                await handleAnnotSSE(resp);
+            } else if (contentType.includes('application/pdf')) {
+                setAnnotStep('upload', 'done');
+                setAnnotStep('barlines', 'done');
+                setAnnotStep('notes', 'done');
+                setAnnotStep('chords', 'done');
+                setAnnotStep('annotate', 'done');
+                annotProgressFill.style.width = '100%';
+                annotLogMsg('Processament completat!', 'ok');
+                showAnnotResult(await resp.blob());
+            } else if (contentType.includes('application/json')) {
+                const data = await resp.json();
+                if (data.download_url) {
+                    setAnnotStep('upload', 'done');
+                    setAnnotStep('barlines', 'done');
+                    setAnnotStep('notes', 'done');
+                    setAnnotStep('chords', 'done');
+                    setAnnotStep('annotate', 'done');
+                    annotProgressFill.style.width = '100%';
+                    for (const msg of (data.log || [])) {
+                        annotLogMsg(msg.text, msg.type || 'info');
+                    }
+                    annotLogMsg('Processament completat!', 'ok');
+                    const isLocal2 = ['localhost','127.0.0.1'].includes(location.hostname);
+                    const API2 = isLocal2 ? 'http://localhost:5070' : '/acords';
+                    const dlResp = await fetch(API2 + data.download_url);
+                    showAnnotResult(await dlResp.blob());
+                }
+            }
+        } catch (err) {
+            showError(err.message);
+            annotLogMsg(err.message, 'err');
+        } finally {
+            btnAnnotate.disabled = false;
+            btnAnalyze.disabled = false;
+        }
+    }
+
+    async function handleAnnotSSE(resp) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                try { handleAnnotEvent(JSON.parse(line.slice(6))); } catch {}
+            }
+        }
+    }
+
+    function handleAnnotEvent(evt) {
+        const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
+        const API = isLocal ? 'http://localhost:5070' : '/acords';
+        switch (evt.type) {
+            case 'step':
+                setAnnotStep(evt.step, evt.status);
+                if (evt.progress) annotProgressFill.style.width = evt.progress + '%';
+                break;
+            case 'log':
+                annotLogMsg(evt.text, evt.level || 'info');
+                break;
+            case 'done':
+                annotProgressFill.style.width = '100%';
+                annotLogMsg('Processament completat!', 'ok');
+                if (evt.download_url) {
+                    fetch(API + evt.download_url).then(r => r.blob()).then(showAnnotResult);
+                }
+                break;
+            case 'error':
+                showError(evt.message);
+                annotLogMsg(evt.message, 'err');
+                break;
+        }
+    }
+
+    function setAnnotStep(name, status) {
+        const el = document.querySelector('#annotPipeline .annot-pipe-step[data-step="' + name + '"]');
+        if (!el) return;
+        el.classList.remove('done', 'active', 'error');
+        el.classList.add(status);
+    }
+
+    function resetAnnotPipeline() {
+        $$('#annotPipeline .annot-pipe-step').forEach(el => el.classList.remove('done', 'active', 'error'));
+    }
+
+    function annotLogMsg(text, level) {
+        const div = document.createElement('div');
+        div.className = 'log-' + (level || 'info');
+        div.textContent = text;
+        annotLog.appendChild(div);
+        annotLog.scrollTop = annotLog.scrollHeight;
+    }
+
+    function showAnnotResult(blob) {
+        const url = URL.createObjectURL(blob);
+        const fname = selectedFile.name.replace(/\.(pdf|xml|musicxml|mxl)$/i, '_acordes.pdf');
+        annotDownload.href = url;
+        annotDownload.download = fname;
+        annotResult.classList.add('show');
+        annotPreviewFrame.src = url;
+    }
 })();
 </script>
 </body>
